@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LifeMineralWater.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261020110438_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20261021043343_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -239,13 +239,13 @@ namespace LifeMineralWater.Migrations
                     b.HasOne("LifeMineralWater.Models.CustomerProfile", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("LifeMineralWater.Models.User", "Salesman")
                         .WithMany()
                         .HasForeignKey("SalesmanId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");

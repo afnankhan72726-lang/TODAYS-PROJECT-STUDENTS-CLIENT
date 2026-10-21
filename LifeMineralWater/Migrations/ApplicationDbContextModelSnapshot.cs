@@ -236,13 +236,13 @@ namespace LifeMineralWater.Migrations
                     b.HasOne("LifeMineralWater.Models.CustomerProfile", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("LifeMineralWater.Models.User", "Salesman")
                         .WithMany()
                         .HasForeignKey("SalesmanId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Customer");

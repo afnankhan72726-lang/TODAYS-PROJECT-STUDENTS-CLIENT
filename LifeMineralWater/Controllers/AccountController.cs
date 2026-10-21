@@ -1,9 +1,11 @@
 ﻿using LifeMineralWater.Data;
 using LifeMineralWater.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace LifeMineralWater.Controllers
 {
@@ -36,7 +38,7 @@ namespace LifeMineralWater.Controllers
         public IActionResult Login() => View();
 
         [HttpPost]
-        public IActionResult Login(string email, string password)
+        public async Task<IActionResult> Login(string email, string password)
         {
             var user = _context.Users.Include(u => u.Role).FirstOrDefault(u => u.Email == email && u.Password == password);
             if (user != null)
@@ -51,19 +53,19 @@ namespace LifeMineralWater.Controllers
                 var identity = new ClaimsIdentity(claims, "LifeWaterCookie");
                 var principal = new ClaimsPrincipal(identity);
 
-                HttpContext.SignInAsync("LifeWaterCookie", principal).Wait();
+             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal)    ;
 
                 if (user.Role.Name == "Admin") return RedirectToAction("Dashboard", "Admin");
                 if (user.Role.Name == "Salesman") return RedirectToAction("Index", "Salesman");
                 return RedirectToAction("Index", "Customer");
             }
-            ViewBag.Error = "Galt credential hain!";
+            ViewBag.Error = "Rong credential !";
             return View();
         }
 
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            HttpContext.SignOutAsync("LifeWaterCookie").Wait();
+         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login");
         }
 

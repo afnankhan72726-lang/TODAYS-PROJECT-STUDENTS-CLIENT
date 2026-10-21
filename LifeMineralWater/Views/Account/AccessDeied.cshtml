@@ -1,7 +1,17 @@
-﻿<div class="container text-center mt-5">
+﻿@* <div class="container text-center mt-5">
     <div class="card p-5 shadow border-danger" style="max-width: 500px; margin: 0 auto;">
         <h2 class="text-danger fw-bold">⚠️ Access Denied</h2>
         <p class="text-muted mt-2">You do not possess the clearance level required to access this secure zone.</p>
         <a href="/Account/Logout" class="btn btn-danger mt-3">Login with Another Account</a>
     </div>
+</div> *@
+
+
+<div class="container text-center mt-5">
+<div class="card p-5 shadow border-danger" style="max-width: 550px; margin: 0 auto; border-radius:12px;">
+<h2 class="text-danger fw-bold">nn Insufficient Authorization</h2>
+<p class="text-muted mt-3">You do not possess the target access role clearance required to enter this platform endpoint
+context node.</p>
+<a href="/Account/Logout" class="btn btn-danger btn-sm mt-3 px-4">Authenticate via Different Account</a>
+</div>
 </div>

@@ -3,32 +3,217 @@
     Layout = null;
 }
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login - Life Mineral Water</title>
-    <link rel="stylesheet" href="https://jsdelivr.net">
-</head>
-<body class="bg-light">
-    <div class="container d-flex justify-content-center mt-5">
-        <div class="card shadow p-4" style="max-width: 400px; width:100%;">
-            <h3 class="text-center text-primary fw-bold mb-4">Life Mineral Water</h3>
-            <form asp-action="Login" method="post">
-                @if (ViewBag.Error != null)
-                {
-                    <div class="alert alert-danger text-center">@ViewBag.Error</div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In - Life Mineral Water</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <!-- Font Awesome for Luxury Icons -->
+    <link href="https://cloudflare.com" rel="stylesheet">
+    <!-- Premium Google Font -->
+    <link href="https://googleapis.com" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 50%, #dbeafe 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+            /* Abstract Organic Water Bubbles Background */
+            body::before, body::after {
+                content: '';
+                position: absolute;
+                border-radius: 50%;
+                background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(14, 165, 233, 0.05) 100%);
+                filter: blur(40px);
+                z-index: 0;
+            }
+
+            body::before {
+                width: 300px;
+                height: 300px;
+                top: -50px;
+                left: -50px;
+            }
+
+            body::after {
+                width: 400px;
+                height: 400px;
+                bottom: -80px;
+                right: -80px;
+            }
+
+        .luxury-card {
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 28px;
+            box-shadow: 0 25px 50px -12px rgba(14, 165, 233, 0.12);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            padding: 45px 40px;
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .brand-title {
+            background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            font-size: 1.85rem;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-subtitle {
+            color: #64748b;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 22px;
+        }
+
+            .input-group-custom i {
+                position: absolute;
+                left: 16px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #94a3b8;
+                transition: color 0.3s;
+                font-size: 1rem;
+            }
+
+        .form-control-custom {
+            width: 100%;
+            border-radius: 14px;
+            padding: 14px 16px 14px 45px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+            color: #1e293b;
+            background-color: rgba(248, 250, 252, 0.7);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+            .form-control-custom:focus {
+                background-color: #ffffff;
+                border-color: #0ea5e9;
+                box-shadow: 0 0 0 5px rgba(14, 165, 233, 0.12);
+                outline: 0;
+            }
+
+        .input-group-custom .form-control-custom:focus + i {
+            color: #0ea5e9;
+        }
+
+        /* 🌊 Dynamic Luxury Liquid Button Hover Animation */
+        .btn-luxury {
+            position: relative;
+            background: #0284c7;
+            border: none;
+            border-radius: 14px;
+            padding: 15px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: white;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.25);
+            transition: all 0.4s ease;
+            z-index: 1;
+        }
+
+            .btn-luxury::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+                transition: all 0.6s ease;
+                z-index: -1;
+            }
+
+            .btn-luxury:hover {
+                background: #0369a1;
+                box-shadow: 0 12px 30px rgba(3, 105, 161, 0.4);
+                transform: translateY(-2px);
+            }
+
+                .btn-luxury:hover::before {
+                    left: 100%;
                 }
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Email Address</label>
-                    <input type="email" name="email" class="form-control" required />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Password</label>
-                    <input type="password" name="password" class="form-control" required />
-                </div>
-                <button type="submit" class="btn btn-primary w-100 fw-bold py-2 mb-3">Sign In</button>
-                <p class="text-center small">Need a corporate account? <a asp-action="Register">Register Here</a></p>
-            </form>
+
+        .link-luxury {
+            color: #0284c7;
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+        }
+
+            .link-luxury::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: -2px;
+                left: 0;
+                background-color: #0284c7;
+                transition: width 0.3s ease;
+            }
+
+            .link-luxury:hover::after {
+                width: 100%;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="luxury-card">
+        <div class="text-center mb-4">
+            <h2 class="brand-title mb-1">Life Mineral Water</h2>
+            <p class="brand-subtitle">Portal Authentication</p>
         </div>
+
+        <form asp-action="Login" method="post">
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger border-0 text-center mb-3 style='border-radius: 12px; font-size: 0.85rem;'">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i> @ViewBag.Error
+                </div>
+            }
+
+            <div class="input-group-custom">
+                <input type="email" name="email" class="form-control-custom" placeholder="Email Address" required />
+                <i class="fa-regular fa-envelope"></i>
+            </div>
+
+            <div class="input-group-custom mb-4">
+                <input type="password" name="password" class="form-control-custom" placeholder="Password" required />
+                <i class="fa-solid fa-lock"></i>
+            </div>
+
+            <button type="submit" class="btn btn-luxury w-100 mb-4">
+                Sign In Platform <i class="fa-solid fa-arrow-right-to-bracket ms-2"></i>
+            </button>
+
+            <p class="text-center small text-muted mb-0">
+                New member? <a asp-action="Register" class="link-luxury">Create Account</a>
+            </p>
+        </form>
     </div>
+
 </body>
 </html>

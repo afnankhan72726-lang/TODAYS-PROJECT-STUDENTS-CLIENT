@@ -5,6 +5,8 @@ namespace LifeMineralWater.Models
 {
     public class Transaction
     {
+        internal readonly decimal TotalBillcorrectedPaid;
+
         [Key]
         public int Id { get; set; }
 

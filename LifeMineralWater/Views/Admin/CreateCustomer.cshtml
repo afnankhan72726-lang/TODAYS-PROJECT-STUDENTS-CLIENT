@@ -1,0 +1,26 @@
+﻿@model LifeMineralWater.Models.CustomerProfile
+<div class="container mt-4" style="max-width: 550px;">
+    <div class="card p-4 shadow-sm border-0">
+        <h4 class="text-primary mb-3 fw-bold">Customer Configuration Setup</h4>
+        <form asp-action="CreateCustomer" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label text-secondary small">Map Linked Client Account</label>
+                <select asp-for="UserId" class="form-select" required>
+                    @foreach (var user in ViewBag.Users)
+                    {
+                        <option value="@user.Id">@user.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label text-secondary small">Standard Pricing Rate per Bottle</label>
+                <input asp-for="StandardRate" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label text-secondary small">Verification Contract Document File Upload</label>
+                <input type="file" name="imageFile" class="form-control" accept="image/*" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100 fw-semibold py-2">Initialize Customer Parameter Map</button>
+        </form>
+    </div>
+</div>
