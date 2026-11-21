@@ -1,0 +1,26 @@
+@model BottleTypeEditVm
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Add bottle type" : "Edit bottle type";
+}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <a asp-action="BottleTypes" class="small text-decoration-none muted">← Back to bottle types</a>
+        <div class="card-soft mt-2">
+            <div class="card-header">@ViewData["Title"]</div>
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid) { <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div> }
+                <form asp-action="BottleTypeForm" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="row g-3">
+                        <div class="col-12"><label asp-for="Name" class="form-label">Name</label><input asp-for="Name" class="form-control" /><span asp-validation-for="Name" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="CapacityMl" class="form-label">Capacity (ml)</label><input asp-for="CapacityMl" class="form-control" /><span asp-validation-for="CapacityMl" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="DepositAmount" class="form-label">Deposit per bottle</label><input asp-for="DepositAmount" class="form-control" /><span asp-validation-for="DepositAmount" class="field-error"></span></div>
+                        <div class="col-12 d-flex align-items-center"><div class="form-check"><input asp-for="IsActive" class="form-check-input" type="checkbox" /><label asp-for="IsActive" class="form-check-label">Active</label></div></div>
+                    </div>
+                    <div class="mt-4 d-flex gap-2"><button type="submit" class="btn btn-brand">Save bottle type</button><a asp-action="BottleTypes" class="btn btn-light">Cancel</a></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

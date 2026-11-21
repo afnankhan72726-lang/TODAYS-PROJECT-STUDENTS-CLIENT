@@ -1,0 +1,50 @@
+@model AdminReportVm
+@{
+    ViewData["Title"] = Model.Title;
+    var selected = Context.Request.Query["report"].ToString();
+    var customers = Model.Customers;
+    var salesmen = Model.Salesmen;
+}
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+    <div><h2 class="fw-bold mb-1">@Model.Title</h2><div class="text-muted small">Projected, read-only reporting over indexed ledger tables</div></div>
+</div>
+<div class="card-soft">
+    <div class="card-header">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small">Report</label>
+                <select name="report" class="form-select form-select-sm">
+                    <option value="sales" selected="@(selected == "sales" || string.IsNullOrEmpty(selected))">Sales detail</option>
+                    <option value="customers" selected="@(selected == "customers")">Customer-wise sales</option>
+                    <option value="bottles" selected="@(selected == "bottles")">Bottles</option>
+                    <option value="balances" selected="@(selected == "balances")">Bottle balances</option>
+                    <option value="money" selected="@(selected == "money")">Money balances</option>
+                    <option value="collections" selected="@(selected == "collections")">Cash collections</option>
+                    <option value="expenses" selected="@(selected == "expenses")">Expenses</option>
+                    <option value="salesman" selected="@(selected == "salesman")">Salesman cash</option>
+                    <option value="receivables" selected="@(selected == "receivables")">Receivables / payables</option>
+                    <option value="profit" selected="@(selected == "profit")">Profit &amp; loss</option>
+                    <option value="positions" selected="@(selected == "positions")">Cash &amp; bank positions</option>
+                </select>
+            </div>
+            <div class="col-md-2"><label class="form-label small">From</label><input type="date" name="from" value="@Model.From?.ToString("yyyy-MM-dd")" class="form-control form-control-sm" /></div>
+            <div class="col-md-2"><label class="form-label small">To</label><input type="date" name="to" value="@Model.To?.ToString("yyyy-MM-dd")" class="form-control form-control-sm" /></div>
+            <div class="col-md-2"><label class="form-label small">Customer</label><select name="customerId" asp-items="customers" class="form-select form-select-sm"></select></div>
+            <div class="col-md-2"><label class="form-label small">Salesman</label><select name="salesmanId" asp-items="salesmen" class="form-select form-select-sm"></select></div>
+            <div class="col-md-1"><button class="btn btn-sm btn-brand w-100">Run</button></div>
+        </form>
+    </div>
+    <div class="table-wrap">
+        <table class="table table-hover mb-0">
+            <thead><tr>@foreach (var h in Model.Headers) { <th>@h</th> }</tr></thead>
+            <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>@foreach (var cell in row) { <td class="small">@cell</td> }</tr>
+                }
+                @if (!Model.Rows.Any()) { <tr><td colspan="@Math.Max(1, Model.Headers.Count)" class="empty-state">No data for the selected filters.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-body small muted">Displaying up to 200 rows. Use date and party filters to narrow large reports.</div>
+</div>

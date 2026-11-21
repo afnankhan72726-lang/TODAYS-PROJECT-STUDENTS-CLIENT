@@ -1,0 +1,89 @@
+@model AdminFinanceVm
+@{
+    ViewData["Title"] = "Cash & bank";
+    var salesmen = Model.Salesmen;
+}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div><h2 class="fw-bold mb-1">Cash &amp; bank books</h2><div class="text-muted small">Every movement is recorded with direction, category, date and actor</div></div>
+    <a asp-action="Reports" asp-route-report="positions" class="btn btn-outline-brand">Position report</a>
+</div>
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3"><div class="kpi green"><div class="kpi-label">Cash in</div><div class="kpi-value money">@Model.Position.CashIn.ToString("N2")</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi red"><div class="kpi-label">Cash out</div><div class="kpi-value money">@Model.Position.CashOut.ToString("N2")</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi"><div class="kpi-label">Cash position</div><div class="kpi-value money">@Model.Position.CashPosition.ToString("N2")</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi amber"><div class="kpi-label">Bank position</div><div class="kpi-value money">@Model.Position.BankPosition.ToString("N2")</div><div class="kpi-foot">In @Model.Position.BankIn.ToString("N2") · Out @Model.Position.BankOut.ToString("N2")</div></div></div>
+</div>
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card-soft">
+            <div class="card-header">Post cash entry</div>
+            <div class="card-body">
+                <form asp-action="AddCash" method="post">
+                    <div class="row g-3">
+                        <div class="col-md-6"><label class="form-label">Direction</label><select name="Direction" asp-items="Html.GetEnumSelectList<CashDirection>()" class="form-select"></select></div>
+                        <div class="col-md-6"><label class="form-label">Category</label><select name="Category" asp-items="Html.GetEnumSelectList<CashCategory>()" class="form-select"></select></div>
+                        <div class="col-md-6"><label class="form-label">Amount</label><input name="Amount" type="number" step="0.01" min="0.01" class="form-control" /></div>
+                        <div class="col-md-6"><label class="form-label">Date</label><input name="TransactionDate" type="date" class="form-control" /></div>
+                        <div class="col-12"><label class="form-label">Salesman (optional — updates his cash)</label><select name="SalesmanId" asp-items="salesmen" class="form-select"><option value="">— None —</option></select></div>
+                        <div class="col-12"><label class="form-label">Description</label><input name="Description" class="form-control" /></div>
+                    </div>
+                    <button type="submit" class="btn btn-brand mt-3">Post cash entry</button>
+                </form>
+            </div>
+        </div>
+        <div class="card-soft mt-4">
+            <div class="card-header">Post bank entry</div>
+            <div class="card-body">
+                <form asp-action="AddBank" method="post">
+                    <div class="row g-3">
+                        <div class="col-md-6"><label class="form-label">Direction</label><select name="Direction" asp-items="Html.GetEnumSelectList<CashDirection>()" class="form-select"></select></div>
+                        <div class="col-md-6"><label class="form-label">Bank account</label><select name="BankAccountId" class="form-select"><option value="">— Select —</option>@foreach (var b in Model.Banks) { <option value="@b.Id">@b.BankName — @b.AccountNumber</option> }</select></div>
+                        <div class="col-md-6"><label class="form-label">Amount</label><input name="Amount" type="number" step="0.01" min="0.01" class="form-control" /></div>
+                        <div class="col-md-6"><label class="form-label">Date</label><input name="TransactionDate" type="date" class="form-control" /></div>
+                        <div class="col-md-6"><label class="form-label">Category / reference</label><select name="Category" asp-items="Html.GetEnumSelectList<CashCategory>()" class="form-select"></select></div>
+                        <div class="col-md-6"><label class="form-label">Description</label><input name="Description" class="form-control" /></div>
+                    </div>
+                    <button type="submit" class="btn btn-brand mt-3">Post bank entry</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card-soft">
+            <div class="card-header">Recent cash entries</div>
+            <div class="table-wrap">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>Date</th><th>Direction</th><th>Category</th><th>Description</th><th class="text-end">Amount</th></tr></thead>
+                    <tbody>
+                        @foreach (var e in Model.CashEntries)
+                        {
+                            <tr><td class="small">@e.TransactionDate.ToString("dd-MM-yyyy")</td>
+                                <td><span class="badge badge-soft @(e.Direction == CashDirection.In ? "badge-ok" : "badge-bad")">@e.Direction</span></td>
+                                <td class="small">@e.Category</td><td class="small muted">@e.Description</td>
+                                <td class="text-end money">@e.Amount.ToString("N2")</td></tr>
+                        }
+                        @if (!Model.CashEntries.Any()) { <tr><td colspan="5" class="empty-state">No cash entries yet.</td></tr> }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-soft mt-4">
+            <div class="card-header">Recent bank entries</div>
+            <div class="table-wrap">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>Date</th><th>Direction</th><th>Account</th><th>Description</th><th class="text-end">Amount</th></tr></thead>
+                    <tbody>
+                        @foreach (var e in Model.BankEntries)
+                        {
+                            <tr><td class="small">@e.TransactionDate.ToString("dd-MM-yyyy")</td>
+                                <td><span class="badge badge-soft @(e.Direction == CashDirection.In ? "badge-ok" : "badge-bad")">@e.Direction</span></td>
+                                <td class="small">@(e.BankAccount?.BankName ?? "—")</td><td class="small muted">@e.Description</td>
+                                <td class="text-end money">@e.Amount.ToString("N2")</td></tr>
+                        }
+                        @if (!Model.BankEntries.Any()) { <tr><td colspan="5" class="empty-state">No bank entries yet.</td></tr> }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -22,7 +22,7 @@ namespace LifeMineralWater.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("LifeMineralWater.Models.CustomerProfile", b =>
+            modelBuilder.Entity("LifeMineralWater.Models.Announcement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -30,35 +30,419 @@ namespace LifeMineralWater.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("EndOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive", "StartOn", "EndOn")
+                        .HasDatabaseName("IX_Announcements_Active");
+
+                    b.ToTable("Announcements");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.AppUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastLoginAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Users_Email");
+
+                    b.HasIndex("Role", "IsActive")
+                        .HasDatabaseName("IX_Users_Role_Active");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.AuditLog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("Action")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ActorName")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<int?>("ActorUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AffectedColumns")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("CorrelationId")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("EntityId")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("NewValues")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("OccurredAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OldValues")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OccurredAt")
+                        .HasDatabaseName("IX_Audit_Date");
+
+                    b.HasIndex("EntityName", "EntityId", "OccurredAt")
+                        .HasDatabaseName("IX_Audit_Entity");
+
+                    b.ToTable("AuditLogs");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.BankAccount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AccountNumber")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("AccountTitle")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("BankName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Branch")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("Iban")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BankAccounts");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.BankBookEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("BankAccountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("Direction")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reference")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransactionDate")
+                        .HasDatabaseName("IX_BankBook_Date");
+
+                    b.HasIndex("BankAccountId", "TransactionDate")
+                        .HasDatabaseName("IX_BankBook_Account_Date");
+
+                    b.ToTable("BankBookEntries");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.BottleType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CapacityMl")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("DepositAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("UX_BottleTypes_Name");
+
+                    b.ToTable("BottleTypes");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.CashBookEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("Direction")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("LedgerEntryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reference")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<int?>("SalesmanId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransactionDate")
+                        .HasDatabaseName("IX_Cash_Date");
+
+                    b.HasIndex("SalesmanId", "TransactionDate")
+                        .HasDatabaseName("IX_Cash_Salesman_Date");
+
+                    b.ToTable("CashBookEntries");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.Customer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int?>("AssignedSalesmanId")
+                        .HasColumnType("int");
+
                     b.Property<int>("BottleBalance")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("CustomRate")
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("DepositAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("DepositBottlesCount")
+                    b.Property<int>("DepositBottles")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("DepositPaid")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("MoneyBalance")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("OpeningBottleBalance")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("OpeningMoneyBalance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
                     b.Property<string>("ProfilePicturePath")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("StandardRate")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Customers_Code");
 
-                    b.ToTable("CustomerProfiles");
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Customers_User");
+
+                    b.HasIndex("AssignedSalesmanId", "Status")
+                        .HasDatabaseName("IX_Customers_Salesman_Status");
+
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("LifeMineralWater.Models.Expense", b =>
@@ -72,24 +456,43 @@ namespace LifeMineralWater.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("Date")
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
-                    b.Property<int>("LoggerId")
+                    b.Property<DateTime>("ExpenseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsBusinessExpense")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RecordedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SalesmanId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LoggerId");
+                    b.HasIndex("ExpenseDate")
+                        .HasDatabaseName("IX_Expenses_Date");
+
+                    b.HasIndex("RecordedByUserId");
+
+                    b.HasIndex("SalesmanId", "ExpenseDate")
+                        .HasDatabaseName("IX_Expenses_Salesman_Date");
 
                     b.ToTable("Expenses");
                 });
 
-            modelBuilder.Entity("LifeMineralWater.Models.Role", b =>
+            modelBuilder.Entity("LifeMineralWater.Models.LedgerEntry", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -97,42 +500,20 @@ namespace LifeMineralWater.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Salesman"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Customer"
-                        });
-                });
-
-            modelBuilder.Entity("LifeMineralWater.Models.Transaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("AmountPaid")
+                    b.Property<decimal>("AmountAdjusted")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("AmountReceived")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("BottleBalanceAfter")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BottleCorrection")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BottleTypeId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -144,40 +525,250 @@ namespace LifeMineralWater.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
                     b.Property<int>("EmptyReceived")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EntryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EntryType")
                         .HasColumnType("int");
 
                     b.Property<int>("FilledDelivered")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsPendingModification")
                         .HasColumnType("bit");
 
-                    b.Property<string>("ModificationReason")
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SalesmanId")
+                    b.Property<decimal>("MoneyBalanceAfter")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("TotalBill")
+                    b.Property<decimal>("Rate")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ReferenceNo")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<decimal>("SaleAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("SalesmanId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("BottleTypeId");
 
-                    b.HasIndex("SalesmanId");
+                    b.HasIndex("EntryDate")
+                        .HasDatabaseName("IX_Ledger_Date");
 
-                    b.ToTable("Transactions");
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ReferenceNo")
+                        .HasDatabaseName("IX_Ledger_Reference");
+
+                    b.HasIndex("CustomerId", "EntryDate")
+                        .HasDatabaseName("IX_Ledger_Customer_Date");
+
+                    b.HasIndex("CustomerId", "EntryType")
+                        .HasDatabaseName("IX_Ledger_Customer_Type");
+
+                    b.HasIndex("IsDeleted", "EntryDate")
+                        .HasDatabaseName("IX_Ledger_Deleted_Date");
+
+                    b.HasIndex("SalesmanId", "EntryDate")
+                        .HasDatabaseName("IX_Ledger_Salesman_Date");
+
+                    b.ToTable("LedgerEntries");
                 });
 
-            modelBuilder.Entity("LifeMineralWater.Models.User", b =>
+            modelBuilder.Entity("LifeMineralWater.Models.ModificationRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CustomerName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<int?>("LedgerEntryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RequestType")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("RequestedAmountReceived")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RequestedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequestedEmpty")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequestedFilled")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("RequestedRate")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ReviewNote")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ReviewedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LedgerEntryId")
+                        .HasDatabaseName("IX_Requests_Entry");
+
+                    b.HasIndex("RequestedByUserId");
+
+                    b.HasIndex("Status", "RequestedAt")
+                        .HasDatabaseName("IX_Requests_Status_Date");
+
+                    b.ToTable("ModificationRequests");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.PayrollEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Allowances")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("BasicSalary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Deductions")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("PaidOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Period")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RecordedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StaffId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StaffId", "Period")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Payroll_Staff_Period");
+
+                    b.ToTable("PayrollEntries");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Products_Code");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Products_Name");
+
+                    b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.Rate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("BottleTypeId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -186,79 +777,494 @@ namespace LifeMineralWater.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<DateTime>("EffectiveFrom")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("EffectiveTo")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("RoleId")
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("BottleTypeId");
 
-                    b.ToTable("Users");
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("EffectiveFrom", "EffectiveTo", "IsActive")
+                        .HasDatabaseName("IX_Rates_Effective");
+
+                    b.HasIndex("CustomerId", "ProductId", "BottleTypeId", "EffectiveFrom")
+                        .HasDatabaseName("IX_Rates_Lookup");
+
+                    b.ToTable("Rates");
                 });
 
-            modelBuilder.Entity("LifeMineralWater.Models.CustomerProfile", b =>
+            modelBuilder.Entity("LifeMineralWater.Models.Salesman", b =>
                 {
-                    b.HasOne("LifeMineralWater.Models.User", "User")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<decimal>("CurrentCash")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("JoinedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("OpeningCash")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Salesmen_Code");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Salesmen_User");
+
+                    b.ToTable("Salesmen");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.StaffAdvance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AdvanceDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsSettled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("RecordedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SalesmanId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("SettledOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StaffId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StaffId", "AdvanceDate")
+                        .HasDatabaseName("IX_Advances_Staff_Date");
+
+                    b.ToTable("StaffAdvances");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.StaffMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Designation")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("JoinedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("MonthlySalary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Staff_Code");
+
+                    b.ToTable("Staff");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.Supplier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("CurrentBalance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<decimal>("OpeningBalance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suppliers");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.SupplierLedgerEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("BalanceAfter")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("EntryType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reference")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<int>("SupplierId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SupplierId", "TransactionDate")
+                        .HasDatabaseName("IX_SupplierLedger_Supplier_Date");
+
+                    b.ToTable("SupplierLedgerEntries");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.SystemSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Group")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Key")
+                        .IsUnique()
+                        .HasDatabaseName("UX_Settings_Key");
+
+                    b.ToTable("SystemSettings");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.BankBookEntry", b =>
+                {
+                    b.HasOne("LifeMineralWater.Models.BankAccount", "BankAccount")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("BankAccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("BankAccount");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.CashBookEntry", b =>
+                {
+                    b.HasOne("LifeMineralWater.Models.Salesman", "Salesman")
+                        .WithMany()
+                        .HasForeignKey("SalesmanId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Salesman");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.Customer", b =>
+                {
+                    b.HasOne("LifeMineralWater.Models.Salesman", "AssignedSalesman")
+                        .WithMany("AssignedCustomers")
+                        .HasForeignKey("AssignedSalesmanId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LifeMineralWater.Models.AppUser", "User")
+                        .WithOne("CustomerProfile")
+                        .HasForeignKey("LifeMineralWater.Models.Customer", "UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AssignedSalesman");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("LifeMineralWater.Models.Expense", b =>
                 {
-                    b.HasOne("LifeMineralWater.Models.User", "Logger")
+                    b.HasOne("LifeMineralWater.Models.AppUser", "RecordedBy")
                         .WithMany()
-                        .HasForeignKey("LoggerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Logger");
-                });
-
-            modelBuilder.Entity("LifeMineralWater.Models.Transaction", b =>
-                {
-                    b.HasOne("LifeMineralWater.Models.CustomerProfile", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
+                        .HasForeignKey("RecordedByUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LifeMineralWater.Models.User", "Salesman")
+                    b.HasOne("LifeMineralWater.Models.Salesman", "Salesman")
                         .WithMany()
                         .HasForeignKey("SalesmanId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("Customer");
+                    b.Navigation("RecordedBy");
 
                     b.Navigation("Salesman");
                 });
 
-            modelBuilder.Entity("LifeMineralWater.Models.User", b =>
+            modelBuilder.Entity("LifeMineralWater.Models.LedgerEntry", b =>
                 {
-                    b.HasOne("LifeMineralWater.Models.Role", "Role")
+                    b.HasOne("LifeMineralWater.Models.BottleType", "BottleType")
                         .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("BottleTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LifeMineralWater.Models.Customer", "Customer")
+                        .WithMany("LedgerEntries")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Role");
+                    b.HasOne("LifeMineralWater.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LifeMineralWater.Models.Salesman", "Salesman")
+                        .WithMany()
+                        .HasForeignKey("SalesmanId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("BottleType");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Salesman");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.ModificationRequest", b =>
+                {
+                    b.HasOne("LifeMineralWater.Models.LedgerEntry", "LedgerEntry")
+                        .WithMany()
+                        .HasForeignKey("LedgerEntryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LifeMineralWater.Models.AppUser", "RequestedBy")
+                        .WithMany()
+                        .HasForeignKey("RequestedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LedgerEntry");
+
+                    b.Navigation("RequestedBy");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.PayrollEntry", b =>
+                {
+                    b.HasOne("LifeMineralWater.Models.StaffMember", "Staff")
+                        .WithMany()
+                        .HasForeignKey("StaffId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Staff");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.Rate", b =>
+                {
+                    b.HasOne("LifeMineralWater.Models.BottleType", "BottleType")
+                        .WithMany()
+                        .HasForeignKey("BottleTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LifeMineralWater.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LifeMineralWater.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("BottleType");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.Salesman", b =>
+                {
+                    b.HasOne("LifeMineralWater.Models.AppUser", "User")
+                        .WithOne("SalesmanProfile")
+                        .HasForeignKey("LifeMineralWater.Models.Salesman", "UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.StaffAdvance", b =>
+                {
+                    b.HasOne("LifeMineralWater.Models.StaffMember", "Staff")
+                        .WithMany()
+                        .HasForeignKey("StaffId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Staff");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.SupplierLedgerEntry", b =>
+                {
+                    b.HasOne("LifeMineralWater.Models.Supplier", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.AppUser", b =>
+                {
+                    b.Navigation("CustomerProfile");
+
+                    b.Navigation("SalesmanProfile");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.Customer", b =>
+                {
+                    b.Navigation("LedgerEntries");
+                });
+
+            modelBuilder.Entity("LifeMineralWater.Models.Salesman", b =>
+                {
+                    b.Navigation("AssignedCustomers");
                 });
 #pragma warning restore 612, 618
         }

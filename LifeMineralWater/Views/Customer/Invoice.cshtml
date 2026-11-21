@@ -1,0 +1,92 @@
+@model MonthlyInvoiceDto
+@{
+    ViewData["Title"] = "Monthly invoice";
+    var years = ViewBag.Years as List<SelectListItem> ?? new List<SelectListItem>();
+    var whatsapp = ViewBag.WhatsAppUrl as string ?? "#";
+    var selectedMonth = (int)(ViewBag.SelectedMonth ?? DateTime.UtcNow.Month);
+}
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4 no-print">
+    <div><h2 class="fw-bold mb-1">Monthly invoice</h2><div class="text-muted small">Print or share directly on WhatsApp</div></div>
+    <div class="d-flex gap-2 align-items-end">
+        <form method="get" class="d-flex gap-2 align-items-end">
+            <div><label class="form-label small">Month</label><select name="month" class="form-select form-select-sm">
+                @for (var m = 1; m <= 12; m++)
+                {
+                    <option value="@m" selected="@(m == selectedMonth)">@System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m)</option>
+                }
+            </select></div>
+            <div><label class="form-label small">Year</label><select name="year" asp-items="years" class="form-select form-select-sm"></select></div>
+            <button class="btn btn-sm btn-brand">Generate</button>
+        </form>
+        <button class="btn btn-light" onclick="window.print()">Print / Save PDF</button>
+        <a class="btn btn-success" href="@whatsapp" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+</div>
+
+<div class="card-soft p-4 p-md-5" style="max-width:900px;margin:auto">
+    <div class="d-flex flex-wrap justify-content-between align-items-start border-bottom pb-3 mb-4">
+        <div>
+            <h3 class="fw-bold mb-1">@Model.CompanyName</h3>
+            <div class="small text-muted">@Model.CompanyAddress</div>
+            <div class="small text-muted">@Model.CompanyPhone · @Model.CompanyEmail</div>
+            <div class="small text-muted">Tax / NTN: @Model.TaxNo</div>
+        </div>
+        <div class="text-end">
+            <div class="fw-bold fs-5">INVOICE</div>
+            <div class="small text-muted">Period: @Model.BillingPeriod</div>
+            <div class="small text-danger fw-semibold">Due date: @Model.DueDate.ToString("dd MMMM yyyy")</div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="small text-muted text-uppercase fw-bold">Bill to</div>
+            <div class="fw-semibold">@Model.CustomerName</div>
+            <div class="small text-muted">@Model.CustomerAddress</div>
+            <div class="small text-muted">Account: @Model.CustomerCode</div>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <div class="small text-muted text-uppercase fw-bold">Deposit status</div>
+            <div class="small">@Model.DepositInfo</div>
+        </div>
+    </div>
+
+    <div class="table-responsive mb-4">
+        <table class="table align-middle">
+            <thead class="table-light"><tr><th>Description</th><th class="text-end">Qty</th><th class="text-end">Rate</th><th class="text-end">Amount</th></tr></thead>
+            <tbody>
+                <tr><td>Filled bottles supplied (@Model.BillingPeriod)</td><td class="text-end">@Model.TotalBottlesSupplied</td><td class="text-end">@Model.Rate.ToString("N2")</td><td class="text-end money">@Model.TotalAmount.ToString("N2")</td></tr>
+            </tbody>
+            <tfoot>
+                <tr><td colspan="3" class="text-end">Previous balance</td><td class="text-end money">@Model.PreviousBalance.ToString("N2")</td></tr>
+                <tr><td colspan="3" class="text-end text-success">Payments received</td><td class="text-end money">(@Model.PaymentsReceived.ToString("N2"))</td></tr>
+                <tr class="table-light"><td colspan="3" class="text-end fw-bold">Current payable</td><td class="text-end money fs-5 fw-bold">@Model.CurrentPayable.ToString("N2")</td></tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="small text-muted text-uppercase fw-bold mb-2">Payment instructions</div>
+            @foreach (var bank in Model.Banks)
+            {
+                <div class="small mb-2">
+                    <strong>@bank.BankName</strong> — @bank.AccountTitle<br />
+                    <span class="mono">@bank.AccountNumber</span>
+                    @if (!string.IsNullOrWhiteSpace(bank.Iban)) { <br /><span class="mono">IBAN: @bank.Iban</span> }
+                    @if (!string.IsNullOrWhiteSpace(bank.Branch)) { <br /><span>Branch: @bank.Branch</span> }
+                </div>
+            }
+            @if (!Model.Banks.Any()) { <div class="small text-muted">No bank account configured.</div> }
+        </div>
+        <div class="col-md-6">
+            <div class="small text-muted text-uppercase fw-bold mb-2">Message</div>
+            <p class="small">@Model.Message</p>
+        </div>
+    </div>
+
+    <div class="border-top pt-3 mt-4 d-flex justify-content-between small text-muted">
+        <span>Generated @DateTime.UtcNow.ToString("dd MMM yyyy HH:mm") UTC</span>
+        <span>@Model.CompanyName</span>
+    </div>
+</div>

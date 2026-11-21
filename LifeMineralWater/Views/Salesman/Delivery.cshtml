@@ -1,0 +1,102 @@
+@model DeliveryFormVm
+@{
+    ViewData["Title"] = "Customer bottle entry";
+}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <a asp-action="Index" class="small text-decoration-none muted">← Back to customers</a>
+        <div class="card-soft mt-2">
+            <div class="card-header d-flex justify-content-between flex-wrap gap-2">
+                <span>New delivery — @Model.Customer.Name <span class="mono muted">(@Model.Customer.Code)</span></span>
+                <span class="badge badge-soft badge-info">Rate @Model.Rate.ToString("N2") / bottle</span>
+            </div>
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div>
+                }
+                <div class="notice mb-4">
+                    <div class="notice-title">Balance check</div>
+                    Previous <strong>@Model.Customer.BottleBalance</strong> + Filled <strong id="prevFilled">0</strong>
+                    − Empty <strong id="prevEmpty">0</strong> = <strong id="newBalance" class="text-primary">@Model.Customer.BottleBalance</strong> bottles
+                    <div class="mt-1 small">Money balance: @Model.Customer.MoneyBalance.ToString("N2") → <strong id="newMoney" class="money">@Model.Customer.MoneyBalance.ToString("N2")</strong></div>
+                    <div class="mt-1 small muted">@Model.Customer.DepositInfo</div>
+                </div>
+
+                <form asp-action="Delivery" method="post">
+                    <input type="hidden" asp-for="Input.CustomerId" />
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Input.ProductId" class="form-label">Product</label>
+                            <select asp-for="Input.ProductId" asp-items="Model.Products" class="form-select"></select>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Input.BottleTypeId" class="form-label">Bottle type</label>
+                            <select asp-for="Input.BottleTypeId" asp-items="Model.BottleTypes" class="form-select"></select>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Input.FilledDelivered" class="form-label">Filled bottles delivered</label>
+                            <input asp-for="Input.FilledDelivered" class="form-control" type="number" min="0" step="1" id="filled" />
+                            <span asp-validation-for="Input.FilledDelivered" class="field-error"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Input.EmptyReceived" class="form-label">Empty bottles received</label>
+                            <input asp-for="Input.EmptyReceived" class="form-control" type="number" min="0" step="1" id="empty" />
+                            <span asp-validation-for="Input.EmptyReceived" class="field-error"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Input.AmountReceived" class="form-label">Amount collected</label>
+                            <input asp-for="Input.AmountReceived" class="form-control" type="number" min="0" step="0.01" id="paid" />
+                            <span asp-validation-for="Input.AmountReceived" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Input.EntryDate" class="form-label">Entry date</label>
+                            <input asp-for="Input.EntryDate" class="form-control" type="date" />
+                            <span asp-validation-for="Input.EntryDate" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Input.Description" class="form-label">Note (optional)</label>
+                            <input asp-for="Input.Description" class="form-control" maxlength="300" />
+                        </div>
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center p-3 rounded" style="background:#f8fafc">
+                                <span class="muted small">Computed sale amount</span>
+                                <strong id="saleAmount" class="money fs-5">0.00</strong>
+                            </div>
+                        </div>
+                        <div class="col-12 d-flex gap-2">
+                            <button type="submit" class="btn btn-brand px-4">Save delivery</button>
+                            <a asp-action="Index" class="btn btn-light">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            var rate = @Model.Rate.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            var prevBottles = @Model.Customer.BottleBalance;
+            var prevMoney = @Model.Customer.MoneyBalance.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            function recalc() {
+                var filled = parseInt(document.getElementById('filled').value) || 0;
+                var empty = parseInt(document.getElementById('empty').value) || 0;
+                var paid = parseFloat(document.getElementById('paid').value) || 0;
+                var sale = filled * rate;
+                document.getElementById('prevFilled').textContent = filled;
+                document.getElementById('prevEmpty').textContent = empty;
+                document.getElementById('newBalance').textContent = prevBottles + filled - empty;
+                document.getElementById('saleAmount').textContent = sale.toFixed(2);
+                document.getElementById('newMoney').textContent = (prevMoney + sale - paid).toFixed(2);
+            }
+            ['filled', 'empty', 'paid'].forEach(function (id) {
+                document.getElementById(id).addEventListener('input', recalc);
+            });
+            recalc();
+        })();
+    </script>
+}

@@ -1,0 +1,59 @@
+@model DashboardDto
+@{
+    ViewData["Title"] = "Owner dashboard";
+    var requests = ViewBag.Requests as List<RequestRowDto> ?? new();
+    var audits = ViewBag.Audits as List<AuditLog> ?? new();
+}
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+    <div><h2 class="fw-bold mb-1">Business overview</h2><div class="text-muted small">Live position across customers, salesmen, cash and bank</div></div>
+    <a asp-action="Reports" class="btn btn-brand">Open reports</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3"><div class="kpi"><div class="kpi-label">Active customers</div><div class="kpi-value">@Model.TotalCustomers</div><div class="kpi-foot">@Model.TotalSalesmen active salesmen</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi red"><div class="kpi-label">Receivables</div><div class="kpi-value money">@Model.Receivables.ToString("N2")</div><div class="kpi-foot">Customer balances due</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi amber"><div class="kpi-label">Payables</div><div class="kpi-value money">@Model.Payables.ToString("N2")</div><div class="kpi-foot">Advances + suppliers</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi green"><div class="kpi-label">Cash position</div><div class="kpi-value money">@Model.CashPosition.ToString("N2")</div><div class="kpi-foot">Bank: @Model.BankPosition.ToString("N2")</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi"><div class="kpi-label">Today's sales</div><div class="kpi-value money">@Model.TodaySales.ToString("N2")</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi"><div class="kpi-label">Bottles in circulation</div><div class="kpi-value">@Model.BottlesInCirculation</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi amber"><div class="kpi-label">Pending requests</div><div class="kpi-value">@Model.PendingRequests</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi green"><div class="kpi-label">Bank position</div><div class="kpi-value money">@Model.BankPosition.ToString("N2")</div></div></div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card-soft">
+            <div class="card-header d-flex justify-content-between"><span>Pending modification requests</span><a asp-action="Requests" class="small">View all →</a></div>
+            <div class="table-wrap">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>Type</th><th>Customer</th><th>Reason</th><th>Requested by</th><th></th></tr></thead>
+                    <tbody>
+                        @foreach (var r in requests)
+                        {
+                            <tr><td><span class="badge badge-soft badge-warn">@r.Type</span></td><td>@r.Customer</td><td class="small">@r.Reason</td><td class="small muted">@r.RequestedBy</td><td><a asp-action="Requests" class="btn btn-sm btn-outline-brand">Review</a></td></tr>
+                        }
+                        @if (!requests.Any()) { <tr><td colspan="5" class="empty-state">No pending requests.</td></tr> }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card-soft">
+            <div class="card-header d-flex justify-content-between"><span>Recent audit activity</span><a asp-action="Audit" class="small">Full log →</a></div>
+            <div class="card-body p-0">
+                <ul class="list-unstyled mb-0">
+                    @foreach (var a in audits)
+                    {
+                        <li class="px-3 py-2 border-bottom small">
+                            <span class="badge badge-soft badge-mute">@a.Action</span>
+                            <strong>@a.EntityName</strong> #@a.EntityId
+                            <div class="muted">@a.ActorName · @a.OccurredAt.ToString("dd-MM-yyyy HH:mm")</div>
+                        </li>
+                    }
+                    @if (!audits.Any()) { <li class="empty-state">No audit entries yet.</li> }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

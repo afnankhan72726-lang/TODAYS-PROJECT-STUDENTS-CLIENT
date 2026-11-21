@@ -1,0 +1,50 @@
+@model SalesmanHistoryVm
+@{
+    ViewData["Title"] = "My transaction history";
+    ViewBag.PagerPage = Model.Page;
+    ViewBag.PagerTotal = Model.Rows.TotalPages;
+    ViewBag.PagerAction = "History";
+    ViewBag.PagerController = "Salesman";
+}
+<div class="card-soft">
+    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <span>Recorded entries (read-only)</span>
+        <form method="get" class="d-flex gap-2 align-items-center">
+            <input type="date" name="from" value="@Model.From?.ToString("yyyy-MM-dd")" class="form-control form-control-sm" />
+            <input type="date" name="to" value="@Model.To?.ToString("yyyy-MM-dd")" class="form-control form-control-sm" />
+            <button class="btn btn-sm btn-brand">Filter</button>
+        </form>
+    </div>
+    <div class="table-wrap">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Date</th><th>Customer</th><th>Type</th><th class="text-center">Filled</th><th class="text-center">Empty</th><th class="text-end">Sale</th><th class="text-end">Collected</th><th class="text-end">Bottle bal.</th><th class="text-end">Money bal.</th><th></th></tr></thead>
+            <tbody>
+                @foreach (var r in Model.Rows.Items)
+                {
+                    <tr>
+                        <td>@r.EntryDate.ToString("dd-MM-yyyy HH:mm")</td><td>@r.CustomerName</td>
+                        <td><span class="badge badge-soft badge-info">@r.EntryType</span></td>
+                        <td class="text-center">@r.Filled</td><td class="text-center">@r.Empty</td>
+                        <td class="text-end money">@r.SaleAmount.ToString("N2")</td><td class="text-end money">@r.Received.ToString("N2")</td>
+                        <td class="text-end">@r.BottleBalanceAfter</td><td class="text-end money">@r.MoneyBalanceAfter.ToString("N2")</td>
+                        <td class="text-end">
+                            @if (r.IsPending)
+                            {
+                                <span class="badge badge-soft badge-warn">Request pending</span>
+                            }
+                            else
+                            {
+                                <a asp-action="RequestChange" asp-route-entryId="@r.Id" class="btn btn-sm btn-outline-brand">Request correction</a>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Rows.Items.Any())
+                {
+                    <tr><td colspan="10" class="empty-state">No entries found.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-body">@await Html.PartialAsync("_Pager")</div>
+</div>

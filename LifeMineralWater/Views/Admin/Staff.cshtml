@@ -1,0 +1,30 @@
+@model IEnumerable<StaffMember>
+@{
+    ViewData["Title"] = "Staff";
+}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div><h2 class="fw-bold mb-1">Staff</h2><div class="text-muted small">Employees for payroll and advances — not portal roles</div></div>
+    <a asp-action="StaffForm" class="btn btn-brand">＋ Add staff</a>
+</div>
+<div class="card-soft">
+    <div class="table-wrap">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Code</th><th>Name</th><th>Designation</th><th>Phone</th><th class="text-end">Monthly salary</th><th>Status</th><th class="text-end">Action</th></tr></thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr><td class="mono">@s.Code</td><td class="fw-semibold">@s.FullName</td><td>@s.Designation</td><td>@s.Phone</td>
+                        <td class="text-end money">@s.MonthlySalary.ToString("N2")</td>
+                        <td><span class="badge badge-soft @(s.IsActive ? "badge-ok" : "badge-bad")">@(s.IsActive ? "Active" : "Inactive")</span></td>
+                        <td class="text-end">
+                            <a asp-action="StaffForm" asp-route-id="@s.Id" class="btn btn-sm btn-outline-brand">Edit</a>
+                            <form asp-action="ToggleStaff" asp-route-id="@s.Id" method="post" class="d-inline">@Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-light" data-confirm="Change staff status?">Toggle</button></form>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any()) { <tr><td colspan="7" class="empty-state">No staff members yet.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

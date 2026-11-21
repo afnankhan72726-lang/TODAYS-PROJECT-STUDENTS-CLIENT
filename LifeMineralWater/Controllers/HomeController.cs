@@ -1,32 +1,30 @@
 using System.Diagnostics;
+using System.Security.Claims;
+using LifeMineralWater.Common;
 using LifeMineralWater.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LifeMineralWater.Controllers
+namespace LifeMineralWater.Controllers;
+
+public sealed class HomeController : Controller
 {
-    public class HomeController : Controller
+    [AllowAnonymous]
+    public IActionResult Index()
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        if (User.Identity?.IsAuthenticated == true)
         {
-            _logger = logger;
+            var role = User.FindFirstValue(ClaimTypes.Role) ?? AppRoles.Customer;
+            return RedirectToAction(AppRoles.LandingAction(role), AppRoles.LandingController(role));
         }
-
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        return RedirectToAction("Login", "Account");
     }
+
+    [AllowAnonymous]
+    public IActionResult Privacy() => View();
+
+    [AllowAnonymous]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+        => View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 }

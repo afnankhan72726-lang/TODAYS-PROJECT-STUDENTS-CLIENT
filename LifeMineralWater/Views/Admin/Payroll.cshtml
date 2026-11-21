@@ -1,0 +1,48 @@
+@model IEnumerable<PayrollRowDto>
+@{
+    ViewData["Title"] = "Payroll";
+    var staff = ViewBag.Staff as List<SelectListItem> ?? new();
+}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div><h2 class="fw-bold mb-1">Payroll</h2><div class="text-muted small">Staff salaries are disbursed only from this screen</div></div>
+</div>
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card-soft">
+            <div class="card-header">Record / update payroll</div>
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid) { <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div> }
+                <form asp-action="Payroll" method="post">
+                    <input type="hidden" name="Id" value="0" />
+                    <div class="mb-2"><label class="form-label small">Staff member</label><select name="StaffId" asp-items="staff" class="form-select"><option value="">— Select —</option></select></div>
+                    <div class="mb-2"><label class="form-label small">Period (month)</label><input name="Period" type="date" value="@DateTime.Today.ToString("yyyy-MM-01")" class="form-control" /></div>
+                    <div class="mb-2"><label class="form-label small">Basic salary</label><input name="BasicSalary" type="number" step="0.01" min="0" class="form-control" /></div>
+                    <div class="mb-2"><label class="form-label small">Allowances</label><input name="Allowances" type="number" step="0.01" min="0" class="form-control" value="0" /></div>
+                    <div class="mb-2"><label class="form-label small">Deductions</label><input name="Deductions" type="number" step="0.01" min="0" class="form-control" value="0" /></div>
+                    <div class="mb-3"><label class="form-label small">Status</label><select name="Status" asp-items="Html.GetEnumSelectList<PayrollStatus>()" class="form-select"></select></div>
+                    <button type="submit" class="btn btn-brand w-100">Save payroll</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card-soft">
+            <div class="table-wrap">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>Period</th><th>Staff</th><th class="text-end">Basic</th><th class="text-end">Allow.</th><th class="text-end">Deduct.</th><th class="text-end">Net</th><th>Status</th><th>Paid on</th></tr></thead>
+                    <tbody>
+                        @foreach (var p in Model)
+                        {
+                            <tr><td class="small">@p.Period.ToString("MMM yyyy")</td><td class="fw-semibold">@p.Staff</td>
+                                <td class="text-end money">@p.Basic.ToString("N2")</td><td class="text-end money">@p.Allowances.ToString("N2")</td>
+                                <td class="text-end money">@p.Deductions.ToString("N2")</td><td class="text-end money fw-bold">@p.Net.ToString("N2")</td>
+                                <td><span class="badge badge-soft @(p.Status == "Paid" ? "badge-ok" : "badge-warn")">@p.Status</span></td>
+                                <td class="small">@p.PaidOn?.ToString("dd-MM-yyyy")</td></tr>
+                        }
+                        @if (!Model.Any()) { <tr><td colspan="8" class="empty-state">No payroll records yet.</td></tr> }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

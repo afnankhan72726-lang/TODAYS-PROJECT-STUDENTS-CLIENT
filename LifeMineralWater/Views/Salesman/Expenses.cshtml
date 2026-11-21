@@ -1,0 +1,69 @@
+@model ExpensePageVm
+@{
+    ViewData["Title"] = "Expenses & advances";
+}
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+    <div><h2 class="fw-bold mb-1">Field expenses</h2><div class="text-muted small">Lunch, fuel, wages, loading and other business costs</div></div>
+    <a asp-action="Advance" class="btn btn-outline-brand">＋ Record staff advance</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card-soft">
+            <div class="card-header">New expense</div>
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div>
+                }
+                <form asp-action="Expenses" method="post">
+                    <div class="mb-3">
+                        <label asp-for="Input.Category" class="form-label">Category</label>
+                        <select asp-for="Input.Category" asp-items="Model.Categories" class="form-select"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.Description" class="form-label">Description</label>
+                        <input asp-for="Input.Description" class="form-control" maxlength="300" placeholder="e.g. Fuel — route petrol" />
+                        <span asp-validation-for="Input.Description" class="field-error"></span>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label asp-for="Input.Amount" class="form-label">Amount</label>
+                            <input asp-for="Input.Amount" class="form-control" type="number" min="0.01" step="0.01" />
+                            <span asp-validation-for="Input.Amount" class="field-error"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="Input.ExpenseDate" class="form-label">Date</label>
+                            <input asp-for="Input.ExpenseDate" class="form-control" type="date" />
+                        </div>
+                    </div>
+                    <div class="form-check mb-4">
+                        <input asp-for="Input.IsBusinessExpense" class="form-check-input" type="checkbox" />
+                        <label asp-for="Input.IsBusinessExpense" class="form-check-label small">Business expense (included in profit &amp; loss)</label>
+                    </div>
+                    <button type="submit" class="btn btn-brand w-100">Save expense</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card-soft">
+            <div class="card-header d-flex justify-content-between"><span>Recent expenses</span><span class="badge badge-soft badge-mute">@Model.Rows.TotalCount total</span></div>
+            <div class="table-wrap">
+                <table class="table table-hover mb-0">
+                    <thead><tr><th>Date</th><th>Category</th><th>Description</th><th class="text-end">Amount</th></tr></thead>
+                    <tbody>
+                        @foreach (var e in Model.Rows.Items)
+                        {
+                            <tr><td>@e.Date.ToString("dd-MM-yyyy")</td><td><span class="badge badge-soft badge-mute">@e.Category</span></td><td>@e.Description</td><td class="text-end money">@e.Amount.ToString("N2")</td></tr>
+                        }
+                        @if (!Model.Rows.Items.Any())
+                        {
+                            <tr><td colspan="4" class="empty-state">No expenses recorded.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

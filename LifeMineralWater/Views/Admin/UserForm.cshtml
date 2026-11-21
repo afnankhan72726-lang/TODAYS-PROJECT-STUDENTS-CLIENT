@@ -1,0 +1,29 @@
+@model UserEditVm
+@{
+    ViewData["Title"] = Model.Id == 0 ? "New account" : "Edit account";
+    var roles = ViewBag.Roles as List<SelectListItem> ?? new();
+}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <a asp-action="Users" class="small text-decoration-none muted">← Back to accounts</a>
+        <div class="card-soft mt-2">
+            <div class="card-header">@ViewData["Title"]</div>
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid) { <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div> }
+                <form asp-action="UserForm" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="row g-3">
+                        <div class="col-md-6"><label asp-for="FullName" class="form-label">Full name</label><input asp-for="FullName" class="form-control" /><span asp-validation-for="FullName" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="Email" class="form-label">Email</label><input asp-for="Email" class="form-control" type="email" /><span asp-validation-for="Email" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="Role" class="form-label">Portal role</label><select asp-for="Role" asp-items="roles" class="form-select"></select><span asp-validation-for="Role" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="Phone" class="form-label">Phone</label><input asp-for="Phone" class="form-control" /></div>
+                        <div class="col-md-6"><label asp-for="Password" class="form-label">Password @(Model.Id > 0 ? "(leave blank to keep)" : "")</label><input asp-for="Password" class="form-control" type="password" /><span asp-validation-for="Password" class="field-error"></span></div>
+                        <div class="col-md-6 d-flex align-items-end pb-2"><div class="form-check"><input asp-for="IsActive" class="form-check-input" type="checkbox" /><label asp-for="IsActive" class="form-check-label">Active</label></div></div>
+                    </div>
+                    <div class="mt-4 d-flex gap-2"><button type="submit" class="btn btn-brand">Save account</button><a asp-action="Users" class="btn btn-light">Cancel</a></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

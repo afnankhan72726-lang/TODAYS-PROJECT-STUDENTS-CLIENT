@@ -1,0 +1,32 @@
+@model IEnumerable<AppUser>
+@{
+    ViewData["Title"] = "Accounts & roles";
+}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div><h2 class="fw-bold mb-1">User accounts</h2><div class="text-muted small">Identity only — business records live in Customers, Salesmen and Staff</div></div>
+    <a asp-action="UserForm" class="btn btn-brand">＋ New account</a>
+</div>
+<div class="card-soft">
+    <div class="table-wrap">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Last login</th><th class="text-end">Action</th></tr></thead>
+            <tbody>
+                @foreach (var u in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@u.FullName</td><td>@u.Email</td>
+                        <td><span class="badge badge-soft badge-info">@u.Role</span></td>
+                        <td><span class="badge badge-soft @(u.IsActive ? "badge-ok" : "badge-bad")">@(u.IsActive ? "Active" : "Disabled")</span></td>
+                        <td class="small muted">@u.LastLoginAt?.ToString("dd-MM-yyyy HH:mm")</td>
+                        <td class="text-end">
+                            <a asp-action="UserForm" asp-route-id="@u.Id" class="btn btn-sm btn-outline-brand">Edit</a>
+                            <form asp-action="ToggleUser" asp-route-id="@u.Id" method="post" class="d-inline">@Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-light" data-confirm="@(u.IsActive ? "Disable" : "Enable") this account?">@(u.IsActive ? "Disable" : "Enable")</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

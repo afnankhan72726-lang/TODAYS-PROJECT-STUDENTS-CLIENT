@@ -1,0 +1,34 @@
+@model List<CustomerBalanceDto>
+@{
+    ViewData["Title"] = "Customers";
+}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div><h2 class="fw-bold mb-1">Customers</h2><div class="text-muted small">Only accounts with the Customer role can be mapped here</div></div>
+    <a asp-action="CustomerForm" class="btn btn-brand">＋ Add customer</a>
+</div>
+<div class="card-soft">
+    <div class="table-wrap">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Code</th><th>Customer</th><th>Salesman</th><th class="text-center">Bottles</th><th class="text-end">Money balance</th><th>Deposit</th><th>Status</th><th class="text-end">Action</th></tr></thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td class="mono">@c.Code</td><td class="fw-semibold">@c.Name</td><td>@c.Salesman</td>
+                        <td class="text-center"><span class="badge badge-soft badge-info">@c.BottleBalance</span></td>
+                        <td class="text-end money @(c.MoneyBalance > 0 ? "text-danger" : "text-success")">@c.MoneyBalance.ToString("N2")</td>
+                        <td class="small">@c.DepositAmount.ToString("N2") / @c.DepositBottles</td>
+                        <td><span class="badge badge-soft @(c.Status == "Active" ? "badge-ok" : "badge-bad")">@c.Status</span></td>
+                        <td class="text-end">
+                            <a asp-action="CustomerForm" asp-route-id="@c.Id" class="btn btn-sm btn-outline-brand">Edit</a>
+                            <form asp-action="ToggleCustomer" asp-route-id="@c.Id" method="post" class="d-inline">@Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-light" data-confirm="Change active status for @c.Name?">@(c.Status == "Active" ? "Deactivate" : "Activate")</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any()) { <tr><td colspan="8" class="empty-state">No customers yet.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

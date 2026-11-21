@@ -1,0 +1,47 @@
+@model RateEditVm
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Add rate" : "Edit rate";
+    var customers = ViewBag.Customers as List<SelectListItem> ?? new();
+    var products = ViewBag.Products as List<SelectListItem> ?? new();
+    var bottles = ViewBag.Bottles as List<SelectListItem> ?? new();
+}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <a asp-action="Rates" class="small text-decoration-none muted">← Back to rates</a>
+        <div class="card-soft mt-2">
+            <div class="card-header">@ViewData["Title"]</div>
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid) { <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div> }
+                <form asp-action="RateForm" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="CustomerId" class="form-label">Customer</label>
+                            <select asp-for="CustomerId" asp-items="customers" class="form-select"></select>
+                            <div class="form-text">Leave as standard to apply to every customer with no specific rule.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Amount" class="form-label">Rate per filled bottle</label>
+                            <input asp-for="Amount" class="form-control" />
+                            <span asp-validation-for="Amount" class="field-error"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ProductId" class="form-label">Product</label>
+                            <select asp-for="ProductId" asp-items="products" class="form-select"></select>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="BottleTypeId" class="form-label">Bottle type</label>
+                            <select asp-for="BottleTypeId" asp-items="bottles" class="form-select"></select>
+                        </div>
+                        <div class="col-md-6"><label asp-for="EffectiveFrom" class="form-label">Effective from</label><input asp-for="EffectiveFrom" type="date" class="form-control" /><span asp-validation-for="EffectiveFrom" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="EffectiveTo" class="form-label">Effective to</label><input asp-for="EffectiveTo" type="date" class="form-control" /><span asp-validation-for="EffectiveTo" class="field-error"></span></div>
+                        <div class="col-12 d-flex align-items-center"><div class="form-check"><input asp-for="IsActive" class="form-check-input" type="checkbox" /><label asp-for="IsActive" class="form-check-label">Active</label></div></div>
+                    </div>
+                    <div class="alert alert-info py-2 small mt-3 mb-0">Saving a new active rule closes overlapping rules automatically. Existing ledger entries keep the rate they were recorded with.</div>
+                    <div class="mt-4 d-flex gap-2"><button type="submit" class="btn btn-brand">Save rate</button><a asp-action="Rates" class="btn btn-light">Cancel</a></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

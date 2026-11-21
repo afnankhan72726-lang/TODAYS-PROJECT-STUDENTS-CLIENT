@@ -1,0 +1,37 @@
+@model DeliveryInput
+@{
+    ViewData["Title"] = "Correct transaction";
+    var products = ViewBag.Products as List<SelectListItem> ?? new();
+    var bottles = ViewBag.Bottles as List<SelectListItem> ?? new();
+    var entryId = (int)ViewBag.EntryId;
+}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <a asp-action="Transactions" class="small text-decoration-none muted">← Back to transactions</a>
+        <div class="card-soft mt-2">
+            <div class="card-header">Correct transaction #@entryId — @ViewBag.CustomerName</div>
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid) { <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div> }
+                <div class="alert alert-warning py-2 small">Corrections are never applied in place: the original remains in the audit trail and customer balances are recalculated from all entries.</div>
+                <form asp-action="EditTransaction" asp-route-id="@entryId" method="post">
+                    <input type="hidden" asp-for="CustomerId" />
+                    <div class="row g-3">
+                        <div class="col-md-6"><label asp-for="ProductId" class="form-label">Product</label><select asp-for="ProductId" asp-items="products" class="form-select"></select></div>
+                        <div class="col-md-6"><label asp-for="BottleTypeId" class="form-label">Bottle type</label><select asp-for="BottleTypeId" asp-items="bottles" class="form-select"></select></div>
+                        <div class="col-md-6"><label asp-for="FilledDelivered" class="form-label">Filled delivered</label><input asp-for="FilledDelivered" class="form-control" /><span asp-validation-for="FilledDelivered" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="EmptyReceived" class="form-label">Empty received</label><input asp-for="EmptyReceived" class="form-control" /><span asp-validation-for="EmptyReceived" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="AmountReceived" class="form-label">Amount collected</label><input asp-for="AmountReceived" class="form-control" /><span asp-validation-for="AmountReceived" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="EntryDate" class="form-label">Entry date</label><input asp-for="EntryDate" type="date" class="form-control" /><span asp-validation-for="EntryDate" class="field-error"></span></div>
+                        <div class="col-12"><label asp-for="Description" class="form-label">Reason / description</label><input asp-for="Description" class="form-control" /><span asp-validation-for="Description" class="field-error"></span></div>
+                    </div>
+                    <div class="form-text mt-2">The rate is always resolved server-side from active rate rules; it cannot be changed here.</div>
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-brand" data-confirm="Save correction and recalculate balances for this customer?">Save correction</button>
+                        <a asp-action="Transactions" class="btn btn-light">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

@@ -1,0 +1,49 @@
+@model IEnumerable<RequestDetailDto>
+@{
+    ViewData["Title"] = "Change requests";
+}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div><h2 class="fw-bold mb-1">Salesman change requests</h2><div class="text-muted small">Salesmen cannot edit ledger rows directly — every request is reviewed here</div></div>
+    <a asp-action="Dashboard" class="btn btn-outline-brand">Dashboard</a>
+</div>
+<div class="card-soft">
+    <div class="table-wrap">
+        <table class="table table-hover mb-0 align-middle">
+            <thead><tr><th>Requested</th><th>Type</th><th>Customer</th><th>Requested by</th><th>Changes</th><th>Reason</th><th class="text-end">Review</th></tr></thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td class="small">@r.At.ToString("dd-MM-yyyy HH:mm")</td>
+                        <td><span class="badge badge-soft badge-info">@r.Type</span><div class="mt-1"><span class="badge badge-soft @(r.Status == "Pending" ? "badge-warn" : r.Status == "Approved" ? "badge-ok" : "badge-bad")">@r.Status</span></div></td>
+                        <td class="fw-semibold">@r.Customer</td>
+                        <td class="small">@r.RequestedBy</td>
+                        <td class="small mono">
+                            Filled: @r.Filled · Empty: @r.Empty<br />
+                            Collected: @r.Received.ToString("N2") · Rate: @r.Rate.ToString("N2")
+                        </td>
+                        <td class="small muted" style="max-width:260px">@r.Reason</td>
+                        <td class="text-end">
+                            @if (r.Status == "Pending")
+                            {
+                                <form asp-action="ApproveRequest" asp-route-id="@r.Id" method="post" class="d-flex gap-1 justify-content-end">
+                                    <input type="text" name="note" class="form-control form-control-sm" style="max-width:130px" placeholder="Review note" />
+                                    <button type="submit" class="btn btn-sm btn-brand" data-confirm="Approve this request and recalculate balances?">Approve</button>
+                                </form>
+                                <form asp-action="RejectRequest" asp-route-id="@r.Id" method="post" class="d-flex justify-content-end mt-1">
+                                    <input type="hidden" name="note" value="" />
+                                    <button type="submit" class="btn btn-sm btn-light" data-confirm="Reject this request?">Reject</button>
+                                </form>
+                            }
+                            else if (!string.IsNullOrWhiteSpace(r.ReviewNote))
+                            {
+                                <span class="small muted">@r.ReviewNote</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any()) { <tr><td colspan="7" class="empty-state">No change requests recorded.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

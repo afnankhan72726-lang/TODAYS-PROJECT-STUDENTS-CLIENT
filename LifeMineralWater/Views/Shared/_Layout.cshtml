@@ -1,65 +1,123 @@
-﻿<!DOCTYPE html>
+﻿@inject ISettingsService Settings
+@{
+    var role = User.FindFirstValue(ClaimTypes.Role) ?? string.Empty;
+    var company = await Settings.GetAsync("Company.Name", "Life Mineral Water");
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+    string Act(string action) => string.Equals(currentAction, action, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+    var toast = TempData["Toast"] as string;
+    var errorToast = TempData["Error"] as string;
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - LifeMineralWater</title>
+    <title>@ViewData["Title"] — @company</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/LifeMineralWater.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand text-primary fw-bold" asp-area="" asp-controller="Home" asp-action="Index">Life Mineral Water</a>
-                <button class="navbar-brand-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                    </ul>
-
-                    @* --- DYNAMIC REGISTRATION, LOGIN & LOGOUT HEADER LOGIC --- *@
-                    <ul class="navbar-nav ms-auto">
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <li class="nav-item">
-                                <span class="nav-link text-dark fw-bold me-2">Welcome, @User.Identity.Name!</span>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-outline-danger btn-sm my-1" asp-controller="Account" asp-action="Logout">Logout</a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a></li>
-                            <li class="nav-item"><a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a></li>
-                        }
-                    </ul>
-
-                </div>
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark">LM</div>
+            <div>
+                <div class="brand-name">@company</div>
+                <div class="brand-sub">Operations Portal</div>
             </div>
-        </nav>
+        </div>
+        <nav>
+            @if (role == AppRoles.Owner)
+            {
+                <div class="nav-label">Overview</div>
+                <a class="nav-link @Act("Dashboard")" asp-controller="Admin" asp-action="Dashboard"><span class="ico">▣</span> Dashboard</a>
+                <a class="nav-link @Act("Transactions")" asp-controller="Admin" asp-action="Transactions"><span class="ico">▤</span> Transactions</a>
+                <a class="nav-link @Act("Requests")" asp-controller="Admin" asp-action="Requests"><span class="ico">↔</span> Change Requests</a>
+                <a class="nav-link @Act("AdjustBalance")" asp-controller="Admin" asp-action="AdjustBalance"><span class="ico">±</span> Adjust Balance</a>
 
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+                <div class="nav-label">Parties</div>
+                <a class="nav-link @Act("Customers")" asp-controller="Admin" asp-action="Customers"><span class="ico">◉</span> Customers</a>
+                <a class="nav-link @Act("Salesmen")" asp-controller="Admin" asp-action="Salesmen"><span class="ico">◈</span> Salesmen</a>
+                <a class="nav-link @Act("Staff")" asp-controller="Admin" asp-action="Staff"><span class="ico">♙</span> Staff</a>
+                <a class="nav-link @Act("Users")" asp-controller="Admin" asp-action="Users"><span class="ico">⚿</span> Accounts</a>
+
+                <div class="nav-label">Catalog &amp; Pricing</div>
+                <a class="nav-link @Act("Products")" asp-controller="Admin" asp-action="Products"><span class="ico">⬡</span> Products</a>
+                <a class="nav-link @Act("BottleTypes")" asp-controller="Admin" asp-action="BottleTypes"><span class="ico">◍</span> Bottle Types</a>
+                <a class="nav-link @Act("Rates")" asp-controller="Admin" asp-action="Rates"><span class="ico">₨</span> Rates &amp; History</a>
+
+                <div class="nav-label">Finance</div>
+                <a class="nav-link @Act("CashBank")" asp-controller="Admin" asp-action="CashBank"><span class="ico">◇</span> Cash &amp; Bank</a>
+                <a class="nav-link @Act("Receivables")" asp-controller="Admin" asp-action="Receivables"><span class="ico">⇄</span> Receivables / Payables</a>
+                <a class="nav-link @Act("Expenses")" asp-controller="Admin" asp-action="Expenses"><span class="ico">−</span> Expenses</a>
+                <a class="nav-link @Act("Payroll")" asp-controller="Admin" asp-action="Payroll"><span class="ico">☷</span> Payroll &amp; Advances</a>
+                <a class="nav-link @Act("Suppliers")" asp-controller="Admin" asp-action="Suppliers"><span class="ico">▧</span> Suppliers</a>
+                <a class="nav-link @Act("Reports")" asp-controller="Admin" asp-action="Reports"><span class="ico">▥</span> Reports</a>
+
+                <div class="nav-label">System</div>
+                <a class="nav-link @Act("Settings")" asp-controller="Admin" asp-action="Settings"><span class="ico">⚙</span> Settings</a>
+                <a class="nav-link @Act("BankAccounts")" asp-controller="Admin" asp-action="BankAccounts"><span class="ico">▦</span> Bank Accounts</a>
+                <a class="nav-link @Act("Announcements")" asp-controller="Admin" asp-action="Announcements"><span class="ico">✦</span> Announcements</a>
+                <a class="nav-link @Act("Audit")" asp-controller="Admin" asp-action="Audit"><span class="ico">◎</span> Audit Log</a>
+            }
+            else if (role == AppRoles.Salesman)
+            {
+                <div class="nav-label">Field Operations</div>
+                <a class="nav-link @Act("Index")" asp-controller="Salesman" asp-action="Index"><span class="ico">▣</span> My Customers</a>
+                <a class="nav-link @Act("Delivery")" asp-controller="Salesman" asp-action="Delivery" asp-route-customerId="0"><span class="ico">▤</span> Bottle Entry</a>
+                <a class="nav-link @Act("Payment")" asp-controller="Salesman" asp-action="Payment"><span class="ico">₨</span> Money Entry</a>
+                <a class="nav-link @Act("Expenses")" asp-controller="Salesman" asp-action="Expenses"><span class="ico">−</span> Expenses &amp; Advances</a>
+                <a class="nav-link @Act("DayReport")" asp-controller="Salesman" asp-action="DayReport"><span class="ico">◷</span> End of Day</a>
+                <a class="nav-link @Act("History")" asp-controller="Salesman" asp-action="History"><span class="ico">▥</span> My History</a>
+            }
+            else
+            {
+                <div class="nav-label">My Account</div>
+                <a class="nav-link @Act("Index")" asp-controller="Customer" asp-action="Index"><span class="ico">▤</span> General Ledger</a>
+                <a class="nav-link @Act("Invoice")" asp-controller="Customer" asp-action="Invoice"><span class="ico">▧</span> Monthly Invoice</a>
+                <a class="nav-link" asp-controller="Customer" asp-action="Index" asp-fragment="announcements"><span class="ico">✦</span> Promotions</a>
+            }
+        </nav>
+        <div class="sidebar-footer">
+            @company<br />All amounts in local currency.<br />© @DateTime.UtcNow.Year
+        </div>
+    </aside>
+
+    <div class="main">
+        <header class="topbar">
+            <h1>@ViewData["Title"]</h1>
+            <div class="d-flex align-items-center gap-3">
+                @if (!string.IsNullOrEmpty(role))
+                {
+                    <span class="role-chip">@role</span>
+                    <div class="text-end">
+                        <div class="fw-semibold small">@User.Identity?.Name</div>
+                        <a asp-controller="Account" asp-action="Logout" class="small text-decoration-none">Sign out</a>
+                    </div>
+                }
+                else
+                {
+                    <a class="btn btn-sm btn-outline-brand" asp-controller="Account" asp-action="Login">Sign in</a>
+                }
+            </div>
+        </header>
+        <main class="content">
+            @if (!string.IsNullOrEmpty(toast))
+            {
+                <div class="toast-stack"><div class="toast-msg ok">✓ @toast</div></div>
+            }
+            @if (!string.IsNullOrEmpty(errorToast))
+            {
+                <div class="toast-stack"><div class="toast-msg err">! @errorToast</div></div>
+            }
             @RenderBody()
         </main>
     </div>
+</div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - LifeMineralWater - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,0 +1,47 @@
+@model ChangeRequestFormVm
+@{
+    ViewData["Title"] = "Request admin correction";
+}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <a asp-action="History" class="small text-decoration-none muted">← Back to history</a>
+        <div class="card-soft mt-2">
+            <div class="card-header d-flex justify-content-between"><span>Transaction #@Model.Entry.Id — @Model.Entry.CustomerName</span><span class="badge badge-soft badge-mute">@Model.Entry.EntryDate.ToString("dd-MM-yyyy")</span></div>
+            <div class="card-body">
+                <div class="notice mb-4">
+                    You cannot edit recorded entries directly. Submit corrected values below; the owner reviews and applies them to the ledger with a full audit trail.
+                </div>
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div>
+                }
+                <div class="table-responsive mb-4">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th></th><th>Filled</th><th>Empty</th><th>Collected</th><th>Rate</th></tr></thead>
+                        <tbody><tr><td class="muted">Recorded</td><td>@Model.Entry.Filled</td><td>@Model.Entry.Empty</td><td>@Model.Entry.Received.ToString("N2")</td><td>@Model.Entry.Rate.ToString("N2")</td></tr></tbody>
+                    </table>
+                </div>
+                <form asp-action="RequestChange" method="post">
+                    <input type="hidden" asp-for="Input.LedgerEntryId" />
+                    <div class="mb-3">
+                        <label asp-for="Input.RequestType" class="form-label">Request type</label>
+                        <select asp-for="Input.RequestType" class="form-select" asp-items="Html.GetEnumSelectList<ModificationRequestType>()"></select>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6"><label asp-for="Input.RequestedFilled" class="form-label">Corrected filled</label><input asp-for="Input.RequestedFilled" class="form-control" type="number" min="0" /></div>
+                        <div class="col-6"><label asp-for="Input.RequestedEmpty" class="form-label">Corrected empty</label><input asp-for="Input.RequestedEmpty" class="form-control" type="number" min="0" /></div>
+                        <div class="col-6"><label asp-for="Input.RequestedAmountReceived" class="form-label">Corrected collected</label><input asp-for="Input.RequestedAmountReceived" class="form-control" type="number" min="0" step="0.01" /></div>
+                        <div class="col-6"><label asp-for="Input.RequestedRate" class="form-label">Corrected rate (owner may override)</label><input asp-for="Input.RequestedRate" class="form-control" type="number" min="0" step="0.01" /></div>
+                    </div>
+                    <div class="mt-3 mb-4">
+                        <label asp-for="Input.Reason" class="form-label">Reason</label>
+                        <textarea asp-for="Input.Reason" class="form-control" rows="3" maxlength="500" placeholder="Explain what was wrong..."></textarea>
+                        <span asp-validation-for="Input.Reason" class="field-error"></span>
+                    </div>
+                    <button type="submit" class="btn btn-brand">Submit request</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

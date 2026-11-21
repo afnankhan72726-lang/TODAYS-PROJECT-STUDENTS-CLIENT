@@ -1,0 +1,25 @@
+@model IEnumerable<ReceivableDto>
+@{
+    ViewData["Title"] = "Receivables & payables";
+}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div><h2 class="fw-bold mb-1">Receivables &amp; payables</h2><div class="text-muted small">Customer dues, customer advances and supplier payables in one view</div></div>
+    <a asp-action="Reports" asp-route-report="receivables" class="btn btn-outline-brand">Open report</a>
+</div>
+<div class="card-soft">
+    <div class="table-wrap">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Party</th><th>Type</th><th class="text-center">Bottles</th><th class="text-end">Balance</th></tr></thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr><td class="fw-semibold">@r.Name</td>
+                        <td><span class="badge badge-soft @(r.Type.Contains("Payable") ? "badge-bad" : r.Type.Contains("Advance") ? "badge-info" : "badge-warn")">@r.Type</span></td>
+                        <td class="text-center">@r.BottleBalance</td>
+                        <td class="text-end money @(r.MoneyBalance > 0 ? "text-danger" : "text-success")">@r.MoneyBalance.ToString("N2")</td></tr>
+                }
+                @if (!Model.Any()) { <tr><td colspan="4" class="empty-state">No outstanding balances.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

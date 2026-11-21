@@ -1,74 +1,90 @@
-﻿using LifeMineralWater.Data;
-using LifeMineralWater.Models;
+﻿using System.Security.Claims;
+using FluentValidation;
+using LifeMineralWater.Common;
+using LifeMineralWater.Data;
+using LifeMineralWater.Models.ViewModels;
+using LifeMineralWater.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
-namespace LifeMineralWater.Controllers
+namespace LifeMineralWater.Controllers;
+
+public sealed class AccountController : Controller
 {
-    public class AccountController : Controller
+    private readonly ApplicationDbContext _db;
+    private readonly IValidator<LoginViewModel> _validator;
+
+    public AccountController(ApplicationDbContext db, IValidator<LoginViewModel> validator)
     {
-        private readonly ApplicationDbContext _context;
-        public AccountController(ApplicationDbContext context) { _context = context; }
+        _db = db;
+        _validator = validator;
+    }
 
-        [HttpGet]
-        public IActionResult Register()
+    [HttpGet, AllowAnonymous]
+    public IActionResult Login(string? returnUrl = null)
+    {
+        if (User.Identity?.IsAuthenticated == true) return RedirectToLanding();
+        return View(new LoginViewModel { ReturnUrl = returnUrl });
+    }
+
+    [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(LoginViewModel model, CancellationToken ct)
+    {
+        var validation = await _validator.ValidateAsync(model, ct);
+        foreach (var e in validation.Errors) ModelState.AddModelError(e.PropertyName, e.ErrorMessage);
+        if (!validation.IsValid) return View(model);
+
+        var email = model.Email.Trim().ToLowerInvariant();
+        var user = await _db.Users.AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Email.ToLower() == email, ct);
+
+        // Same generic error for unknown email / bad password / disabled account.
+        if (user is null || !PasswordHash.Verify(model.Password, user.PasswordHash) || !user.IsActive)
         {
-            ViewBag.Roles = _context.Roles.ToList();
-            return View();
+            ModelState.AddModelError(string.Empty, "Invalid email, password, or inactive account.");
+            return View(model);
         }
 
-        [HttpPost]
-        public IActionResult Register(User user)
+        var claims = new List<Claim>
         {
-            if (ModelState.IsValid)
-            {
-                _context.Users.Add(user);
-                _context.SaveChanges();
-                return RedirectToAction("Login");
-            }
-            ViewBag.Roles = _context.Roles.ToList();
-            return View(user);
-        }
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.FullName),
+            new(ClaimTypes.Role, user.Role),
+            new(ClaimTypes.Email, user.Email)
+        };
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(identity),
+            new AuthenticationProperties { IsPersistent = model.RememberMe, AllowRefresh = true });
 
-        [HttpGet]
-        public IActionResult Login() => View();
+        var tracked = await _db.Users.FindAsync(new object[] { user.Id }, ct);
+        if (tracked is not null) tracked.LastLoginAt = DateTime.UtcNow;
+        await _db.SaveChangesAsync(ct);
 
-        [HttpPost]
-        public async Task<IActionResult> Login(string email, string password)
-        {
-            var user = _context.Users.Include(u => u.Role).FirstOrDefault(u => u.Email == email && u.Password == password);
-            if (user != null)
-            {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Name, user.Name),
-                    new Claim(ClaimTypes.Role, user.Role.Name)
-                };
+        if (!string.IsNullOrWhiteSpace(model.ReturnUrl) && Url.IsLocalUrl(model.ReturnUrl))
+            return LocalRedirect(model.ReturnUrl);
+        return RedirectToLanding(user.Role);
+    }
 
-                var identity = new ClaimsIdentity(claims, "LifeWaterCookie");
-                var principal = new ClaimsPrincipal(identity);
+    [HttpGet]
+    public async Task<IActionResult> Logout(CancellationToken ct)
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return RedirectToAction(nameof(Login));
+    }
 
-             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal)    ;
+    [AllowAnonymous]
+    public IActionResult AccessDenied() => View();
 
-                if (user.Role.Name == "Admin") return RedirectToAction("Dashboard", "Admin");
-                if (user.Role.Name == "Salesman") return RedirectToAction("Index", "Salesman");
-                return RedirectToAction("Index", "Customer");
-            }
-            ViewBag.Error = "Rong credential !";
-            return View();
-        }
+    [HttpGet, Authorize(Roles = AppRoles.Owner)]
+    public IActionResult Register() => RedirectToAction("Users", "Admin");
 
-        public async Task<IActionResult> Logout()
-        {
-         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login");
-        }
-
-        public IActionResult AccessDenied() => View();
+    private IActionResult RedirectToLanding(string? role = null)
+    {
+        role ??= User.FindFirstValue(ClaimTypes.Role) ?? AppRoles.Customer;
+        return RedirectToAction(AppRoles.LandingAction(role), AppRoles.LandingController(role));
     }
 }

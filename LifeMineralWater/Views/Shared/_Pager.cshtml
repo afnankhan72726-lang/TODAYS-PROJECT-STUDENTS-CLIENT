@@ -1,0 +1,23 @@
+@{
+    var page = (int)(ViewBag.PagerPage ?? 1);
+    var totalPages = (int)(ViewBag.PagerTotal ?? 1);
+    var action = (string)(ViewBag.PagerAction ?? "Index");
+    var controller = (string)(ViewBag.PagerController ?? ViewContext.RouteData.Values["controller"]!);
+    var extra = ViewBag.PagerRoute as Dictionary<string, string>;
+}
+@if (totalPages > 1)
+{
+    <nav class="pager mt-3" aria-label="Pagination">
+        @if (page > 1)
+        {
+            <a class="btn btn-sm btn-outline-brand" asp-controller="@controller" asp-action="@action"
+               asp-route-page="@(page - 1)" asp-all-route-data="extra">← Previous</a>
+        }
+        <span class="small text-muted">Page @(page) of @totalPages</span>
+        @if (page < totalPages)
+        {
+            <a class="btn btn-sm btn-outline-brand" asp-controller="@controller" asp-action="@action"
+               asp-route-page="@(page + 1)" asp-all-route-data="extra">Next →</a>
+        }
+    </nav>
+}

@@ -1,0 +1,30 @@
+@model IEnumerable<BankAccount>
+@{
+    ViewData["Title"] = "Bank accounts";
+}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div><h2 class="fw-bold mb-1">Bank accounts</h2><div class="text-muted small">Details shown on customer invoices and used for bank book entries</div></div>
+    <a asp-action="BankAccountForm" class="btn btn-brand">＋ Add account</a>
+</div>
+<div class="card-soft">
+    <div class="table-wrap">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Bank</th><th>Account title</th><th>Account number</th><th>IBAN</th><th>Branch</th><th>Flags</th><th class="text-end">Action</th></tr></thead>
+            <tbody>
+                @foreach (var b in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@b.BankName</td><td>@b.AccountTitle</td><td class="mono">@b.AccountNumber</td>
+                        <td class="mono small">@b.Iban</td><td>@b.Branch</td>
+                        <td>
+                            @if (b.IsDefault) { <span class="badge badge-soft badge-ok">Default</span> }
+                            <span class="badge badge-soft @(b.IsActive ? "badge-info" : "badge-bad")">@(b.IsActive ? "Active" : "Inactive")</span>
+                        </td>
+                        <td class="text-end"><a asp-action="BankAccountForm" asp-route-id="@b.Id" class="btn btn-sm btn-outline-brand">Edit</a></td>
+                    </tr>
+                }
+                @if (!Model.Any()) { <tr><td colspan="7" class="empty-state">No bank accounts yet.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

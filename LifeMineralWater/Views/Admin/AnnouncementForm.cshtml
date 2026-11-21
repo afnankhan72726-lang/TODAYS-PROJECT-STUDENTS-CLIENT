@@ -1,0 +1,28 @@
+@model AnnouncementEditVm
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Add announcement" : "Edit announcement";
+}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <a asp-action="Announcements" class="small text-decoration-none muted">← Back to announcements</a>
+        <div class="card-soft mt-2">
+            <div class="card-header">@ViewData["Title"]</div>
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid) { <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div> }
+                <form asp-action="AnnouncementForm" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="row g-3">
+                        <div class="col-md-8"><label asp-for="Title" class="form-label">Title</label><input asp-for="Title" class="form-control" /><span asp-validation-for="Title" class="field-error"></span></div>
+                        <div class="col-md-4"><label asp-for="Type" class="form-label">Type</label><select asp-for="Type" asp-items="Html.GetEnumSelectList<AnnouncementType>()" class="form-select"></select></div>
+                        <div class="col-12"><label asp-for="Message" class="form-label">Message</label><textarea asp-for="Message" class="form-control" rows="3"></textarea><span asp-validation-for="Message" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="StartOn" class="form-label">Starts on</label><input asp-for="StartOn" type="date" class="form-control" /><span asp-validation-for="StartOn" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="EndOn" class="form-label">Ends on</label><input asp-for="EndOn" type="date" class="form-control" /><span asp-validation-for="EndOn" class="field-error"></span></div>
+                        <div class="col-12 d-flex align-items-center"><div class="form-check"><input asp-for="IsActive" class="form-check-input" type="checkbox" /><label asp-for="IsActive" class="form-check-label">Active</label></div></div>
+                    </div>
+                    <div class="mt-4 d-flex gap-2"><button type="submit" class="btn btn-brand">Save announcement</button><a asp-action="Announcements" class="btn btn-light">Cancel</a></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

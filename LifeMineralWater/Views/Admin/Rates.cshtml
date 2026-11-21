@@ -1,0 +1,29 @@
+@model IEnumerable<RateRowDto>
+@{
+    ViewData["Title"] = "Rates";
+}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div><h2 class="fw-bold mb-1">Rate history</h2><div class="text-muted small">Rates are resolved by date and specificity — never accepted from the client</div></div>
+    <a asp-action="RateForm" class="btn btn-brand">＋ Add rate</a>
+</div>
+<div class="card-soft">
+    <div class="table-wrap">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Customer</th><th>Product</th><th>Bottle</th><th class="text-end">Rate</th><th>Effective from</th><th>Effective to</th><th>Status</th><th class="text-end">Action</th></tr></thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@r.Customer</td><td>@r.Product</td><td>@r.Bottle</td>
+                        <td class="text-end money">@r.Amount.ToString("N2")</td>
+                        <td class="small">@r.From.ToString("dd-MM-yyyy")</td>
+                        <td class="small">@(r.To?.ToString("dd-MM-yyyy") ?? "Open ended")</td>
+                        <td><span class="badge badge-soft @(r.Active ? "badge-ok" : "badge-bad")">@(r.Active ? "Active" : "Closed")</span></td>
+                        <td class="text-end"><a asp-action="RateForm" asp-route-id="@r.Id" class="btn btn-sm btn-outline-brand">Edit</a></td>
+                    </tr>
+                }
+                @if (!Model.Any()) { <tr><td colspan="8" class="empty-state">No rates configured yet.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

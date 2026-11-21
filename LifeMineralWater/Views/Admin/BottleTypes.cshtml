@@ -1,0 +1,28 @@
+@model IEnumerable<BottleType>
+@{
+    ViewData["Title"] = "Bottle types";
+}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div><h2 class="fw-bold mb-1">Bottle types</h2><div class="text-muted small">Capacity and refundable deposit are configured per bottle type</div></div>
+    <a asp-action="BottleTypeForm" class="btn btn-brand">＋ Add bottle type</a>
+</div>
+<div class="card-soft">
+    <div class="table-wrap">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Name</th><th class="text-end">Capacity (ml)</th><th class="text-end">Deposit</th><th>Status</th><th class="text-end">Action</th></tr></thead>
+            <tbody>
+                @foreach (var b in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@b.Name</td>
+                        <td class="text-end mono">@b.CapacityMl.ToString("N0")</td>
+                        <td class="text-end money">@b.DepositAmount.ToString("N2")</td>
+                        <td><span class="badge badge-soft @(b.IsActive ? "badge-ok" : "badge-bad")">@(b.IsActive ? "Active" : "Inactive")</span></td>
+                        <td class="text-end"><a asp-action="BottleTypeForm" asp-route-id="@b.Id" class="btn btn-sm btn-outline-brand">Edit</a></td>
+                    </tr>
+                }
+                @if (!Model.Any()) { <tr><td colspan="5" class="empty-state">No bottle types yet.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

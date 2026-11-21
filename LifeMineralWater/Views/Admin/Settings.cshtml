@@ -1,0 +1,69 @@
+@model SettingEditVm
+@{
+    ViewData["Title"] = "System settings";
+    string? currentGroup = null;
+}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div><h2 class="fw-bold mb-1">System settings</h2><div class="text-muted small">Company details, rates, due dates, messages and static UI values — all editable at runtime</div></div>
+</div>
+@if (!ViewData.ModelState.IsValid) { <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div> }
+<form asp-action="Settings" method="post">
+    <div class="card-soft">
+        <div class="table-wrap">
+            <table class="table table-hover mb-0">
+                <thead><tr><th style="width:32%">Setting</th><th>Value</th><th style="width:14%">Type</th></tr></thead>
+                <tbody>
+                    @for (var i = 0; i < Model.Settings.Count; i++)
+                    {
+                        var s = Model.Settings[i];
+                        if (s.Group != currentGroup)
+                        {
+                            currentGroup = s.Group;
+                            <tr class="table-light"><td colspan="3" class="fw-bold small text-uppercase text-muted py-2">@currentGroup</td></tr>
+                        }
+                        <tr>
+                            <td>
+                                <input type="hidden" asp-for="Settings[i].Id" />
+                                <input type="hidden" asp-for="Settings[i].Key" />
+                                <input type="hidden" asp-for="Settings[i].Group" />
+                                <input type="hidden" asp-for="Settings[i].DisplayName" />
+                                <input type="hidden" asp-for="Settings[i].Type" />
+                                <input type="hidden" asp-for="Settings[i].Description" />
+                                <div class="fw-semibold">@s.DisplayName</div>
+                                <div class="small muted mono">@s.Key</div>
+                                @if (!string.IsNullOrWhiteSpace(s.Description)) { <div class="small muted">@s.Description</div> }
+                            </td>
+                            <td>
+                                @if (s.Type == SettingType.Boolean)
+                                {
+                                    <select asp-for="Settings[i].Value" class="form-select form-select-sm">
+                                        <option value="true" selected="@(s.Value.Equals("true", StringComparison.OrdinalIgnoreCase))">Yes</option>
+                                        <option value="false" selected="@(s.Value.Equals("false", StringComparison.OrdinalIgnoreCase))">No</option>
+                                    </select>
+                                }
+                                else if (s.Type == SettingType.Number)
+                                {
+                                    <input asp-for="Settings[i].Value" class="form-control form-control-sm" type="number" step="any" />
+                                }
+                                else if (s.Type == SettingType.Date)
+                                {
+                                    <input asp-for="Settings[i].Value" class="form-control form-control-sm" type="date" />
+                                }
+                                else
+                                {
+                                    <input asp-for="Settings[i].Value" class="form-control form-control-sm" />
+                                }
+                            </td>
+                            <td><span class="badge badge-soft badge-mute">@s.Type</span></td>
+                        </tr>
+                    }
+                    @if (!Model.Settings.Any()) { <tr><td colspan="3" class="empty-state">No settings found. Run the database seeder.</td></tr> }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-body d-flex justify-content-between align-items-center">
+            <span class="small muted">Changes take effect immediately after save.</span>
+            <button type="submit" class="btn btn-brand">Save settings</button>
+        </div>
+    </div>
+</form>

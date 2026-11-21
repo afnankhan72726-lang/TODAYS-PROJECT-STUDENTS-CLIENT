@@ -1,0 +1,30 @@
+@model IEnumerable<Announcement>
+@{
+    ViewData["Title"] = "Announcements";
+}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div><h2 class="fw-bold mb-1">Announcements &amp; promotions</h2><div class="text-muted small">Shown to customers on their portal when active and in date</div></div>
+    <a asp-action="AnnouncementForm" class="btn btn-brand">＋ Add announcement</a>
+</div>
+<div class="card-soft">
+    <div class="table-wrap">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Title</th><th>Type</th><th>Message</th><th>Starts</th><th>Ends</th><th>Status</th><th class="text-end">Action</th></tr></thead>
+            <tbody>
+                @foreach (var a in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@a.Title</td>
+                        <td><span class="badge badge-soft badge-info">@a.Type</span></td>
+                        <td class="small muted">@a.Message</td>
+                        <td class="small">@a.StartOn.ToString("dd-MM-yyyy")</td>
+                        <td class="small">@(a.EndOn?.ToString("dd-MM-yyyy") ?? "Open ended")</td>
+                        <td><span class="badge badge-soft @(a.IsActive ? "badge-ok" : "badge-bad")">@(a.IsActive ? "Active" : "Inactive")</span></td>
+                        <td class="text-end"><a asp-action="AnnouncementForm" asp-route-id="@a.Id" class="btn btn-sm btn-outline-brand">Edit</a></td>
+                    </tr>
+                }
+                @if (!Model.Any()) { <tr><td colspan="7" class="empty-state">No announcements yet.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

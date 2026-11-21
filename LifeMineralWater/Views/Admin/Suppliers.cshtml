@@ -1,0 +1,27 @@
+@model IEnumerable<Supplier>
+@{
+    ViewData["Title"] = "Suppliers";
+}
+<div class="d-flex justify-content-between align-items-end mb-4">
+    <div><h2 class="fw-bold mb-1">Suppliers</h2><div class="text-muted small">Purchase, payment and adjustment ledger per supplier</div></div>
+    <a asp-action="SupplierForm" class="btn btn-brand">＋ Add supplier</a>
+</div>
+<div class="card-soft">
+    <div class="table-wrap">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Name</th><th>Phone</th><th>Address</th><th class="text-end">Opening</th><th class="text-end">Current balance</th><th>Status</th><th class="text-end">Action</th></tr></thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    <tr><td class="fw-semibold">@s.Name</td><td>@s.Phone</td><td class="small muted">@s.Address</td>
+                        <td class="text-end money">@s.OpeningBalance.ToString("N2")</td>
+                        <td class="text-end money @(s.CurrentBalance > 0 ? "text-danger" : "text-success")">@s.CurrentBalance.ToString("N2")</td>
+                        <td><span class="badge badge-soft @(s.IsActive ? "badge-ok" : "badge-bad")">@(s.IsActive ? "Active" : "Inactive")</span></td>
+                        <td class="text-end text-nowrap"><a asp-action="SupplierLedger" asp-route-id="@s.Id" class="btn btn-sm btn-outline-brand">Ledger</a> <a asp-action="SupplierForm" asp-route-id="@s.Id" class="btn btn-sm btn-light">Edit</a></td>
+                    </tr>
+                }
+                @if (!Model.Any()) { <tr><td colspan="7" class="empty-state">No suppliers yet.</td></tr> }
+            </tbody>
+        </table>
+    </div>
+</div>

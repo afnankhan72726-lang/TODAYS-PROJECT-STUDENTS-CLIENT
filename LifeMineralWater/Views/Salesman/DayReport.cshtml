@@ -1,0 +1,45 @@
+@model EndOfDayDto
+@{
+    ViewData["Title"] = "End-of-day report";
+    var day = (DateTime)ViewBag.Date;
+}
+<div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-4">
+    <div><h2 class="fw-bold mb-1">End-of-day summary</h2><div class="text-muted small">@day.ToString("dddd, dd MMMM yyyy")</div></div>
+    <form method="get" class="d-flex gap-2 align-items-end no-print">
+        <div><label class="form-label small">Date</label><input type="date" name="date" value="@day.ToString("yyyy-MM-dd")" class="form-control" /></div>
+        <button class="btn btn-brand">View</button>
+        <button type="button" class="btn btn-light" onclick="window.print()">Print</button>
+    </form>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3"><div class="kpi"><div class="kpi-label">Customers served</div><div class="kpi-value">@Model.CustomersServed</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi green"><div class="kpi-label">Filled delivered</div><div class="kpi-value">@Model.FilledDelivered</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi amber"><div class="kpi-label">Empty received</div><div class="kpi-value">@Model.EmptyReceived</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi"><div class="kpi-label">Total sales</div><div class="kpi-value money">@Model.Sales.ToString("N2")</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi green"><div class="kpi-label">Cash collected</div><div class="kpi-value money">@Model.CashCollected.ToString("N2")</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi red"><div class="kpi-label">Expenses</div><div class="kpi-value money">@Model.Expenses.ToString("N2")</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi red"><div class="kpi-label">Advances</div><div class="kpi-value money">@Model.Advances.ToString("N2")</div></div></div>
+    <div class="col-6 col-lg-3"><div class="kpi"><div class="kpi-label">Closing cash</div><div class="kpi-value money">@Model.ClosingCash.ToString("N2")</div></div></div>
+</div>
+
+<div class="card-soft">
+    <div class="card-header">Entries for the day</div>
+    <div class="table-wrap">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Time</th><th>Customer</th><th>Type</th><th class="text-center">Filled</th><th class="text-center">Empty</th><th class="text-end">Sale</th><th class="text-end">Collected</th></tr></thead>
+            <tbody>
+                @foreach (var e in Model.Entries)
+                {
+                    <tr><td>@e.EntryDate.ToString("HH:mm")</td><td>@e.CustomerName</td><td><span class="badge badge-soft badge-info">@e.EntryType</span></td>
+                        <td class="text-center">@e.Filled</td><td class="text-center">@e.Empty</td>
+                        <td class="text-end money">@e.SaleAmount.ToString("N2")</td><td class="text-end money">@e.Received.ToString("N2")</td></tr>
+                }
+                @if (!Model.Entries.Any())
+                {
+                    <tr><td colspan="7" class="empty-state">No entries for this date.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

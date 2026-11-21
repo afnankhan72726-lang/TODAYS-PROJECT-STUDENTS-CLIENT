@@ -1,0 +1,31 @@
+@model BankAccountEditVm
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Add bank account" : "Edit bank account";
+}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <a asp-action="BankAccounts" class="small text-decoration-none muted">← Back to bank accounts</a>
+        <div class="card-soft mt-2">
+            <div class="card-header">@ViewData["Title"]</div>
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid) { <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div> }
+                <form asp-action="BankAccountForm" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="row g-3">
+                        <div class="col-md-6"><label asp-for="BankName" class="form-label">Bank name</label><input asp-for="BankName" class="form-control" /><span asp-validation-for="BankName" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="AccountTitle" class="form-label">Account title</label><input asp-for="AccountTitle" class="form-control" /><span asp-validation-for="AccountTitle" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="AccountNumber" class="form-label">Account number</label><input asp-for="AccountNumber" class="form-control" /><span asp-validation-for="AccountNumber" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="Iban" class="form-label">IBAN</label><input asp-for="Iban" class="form-control" /><span asp-validation-for="Iban" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="Branch" class="form-label">Branch</label><input asp-for="Branch" class="form-control" /><span asp-validation-for="Branch" class="field-error"></span></div>
+                        <div class="col-md-6 d-flex align-items-end gap-4 pb-2">
+                            <div class="form-check"><input asp-for="IsDefault" class="form-check-input" type="checkbox" /><label asp-for="IsDefault" class="form-check-label">Default account</label></div>
+                            <div class="form-check"><input asp-for="IsActive" class="form-check-input" type="checkbox" /><label asp-for="IsActive" class="form-check-label">Active</label></div>
+                        </div>
+                    </div>
+                    <div class="mt-4 d-flex gap-2"><button type="submit" class="btn btn-brand">Save account</button><a asp-action="BankAccounts" class="btn btn-light">Cancel</a></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

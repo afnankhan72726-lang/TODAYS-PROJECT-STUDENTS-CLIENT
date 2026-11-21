@@ -1,0 +1,28 @@
+@model AdjustmentInput
+@{
+    ViewData["Title"] = "Adjust balance";
+    var customers = ViewBag.Customers as List<SelectListItem> ?? new();
+}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <a asp-action="Transactions" class="small text-decoration-none muted">← Back to transactions</a>
+        <div class="card-soft mt-2">
+            <div class="card-header">Manual balance adjustment</div>
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid) { <div asp-validation-summary="All" class="alert alert-danger py-2 small"></div> }
+                <div class="alert alert-info py-2 small">Adjustments post a new ledger entry and recalculate the customer balance. Always state a reason — it is written to the audit log.</div>
+                <form asp-action="AdjustBalance" method="post">
+                    <div class="row g-3">
+                        <div class="col-12"><label asp-for="CustomerId" class="form-label">Customer</label><select asp-for="CustomerId" asp-items="customers" class="form-select"></select><span asp-validation-for="CustomerId" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="BottleCorrection" class="form-label">Bottle correction (+ / −)</label><input asp-for="BottleCorrection" class="form-control" /><span asp-validation-for="BottleCorrection" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="AmountAdjusted" class="form-label">Amount added to receivable</label><input asp-for="AmountAdjusted" class="form-control" /><span asp-validation-for="AmountAdjusted" class="field-error"></span></div>
+                        <div class="col-md-6"><label asp-for="AmountReceived" class="form-label">Amount received from customer</label><input asp-for="AmountReceived" class="form-control" /><span asp-validation-for="AmountReceived" class="field-error"></span></div>
+                        <div class="col-12"><label asp-for="Description" class="form-label">Reason (required)</label><input asp-for="Description" class="form-control" /><span asp-validation-for="Description" class="field-error"></span></div>
+                    </div>
+                    <div class="mt-4 d-flex gap-2"><button type="submit" class="btn btn-brand">Post adjustment</button><a asp-action="Transactions" class="btn btn-light">Cancel</a></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
